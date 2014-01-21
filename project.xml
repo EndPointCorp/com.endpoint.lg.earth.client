@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<project type="activity" builder="java">
+  <name>Liquid Galaxy Earth Activity</name>
+  <description>
+This activity is meant to stop and start a Google Earth instance. It writes the Google Earth configuration files on startup and configuration change.
+  </description>
+
+  <identifyingName>com.endpoint.lg.earth</identifyingName>
+  <version>1.0.0</version>
+
+  <deployments>
+    <deployment type="testdeploy" location="${deployment.test.deploy}" />
+    <deployment type="testimport" location="${deployment.test.import}" />
+  </deployments>
+</project>
