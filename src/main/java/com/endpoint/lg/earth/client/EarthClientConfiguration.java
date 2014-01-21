@@ -363,7 +363,7 @@ public class EarthClientConfiguration {
     layers.earthLabels.setCountries(activityConfig.getRequiredPropertyString("layers.earth.labels.countries"));
     layers.earthLabels.setIslands(activityConfig.getRequiredPropertyString("layers.earth.labels.islands"));
     layers.earthLabels.setLocalPlaceNames(activityConfig.getRequiredPropertyString("layers.earth.labels.localPlaceNames"));
-    layers.earthLabels.setPopulatedPlaces(activityConfig.getRequiredPropertyString("layers.earth.lables.populatedPlaces"));
+    layers.earthLabels.setPopulatedPlaces(activityConfig.getRequiredPropertyString("layers.earth.labels.populatedPlaces"));
     layers.earthLabels.setRegionsAndCounties(activityConfig.getRequiredPropertyString("layers.earth.labels.regionsAndCounties"));
     layers.earthLabels.setStatesAndProvinces(activityConfig.getRequiredPropertyString("layers.earth.labels.statesAndProvinces"));
     layers.earthLabels.setWaterBodies(activityConfig.getRequiredPropertyString("layers.earth.labels.waterBodies"));
