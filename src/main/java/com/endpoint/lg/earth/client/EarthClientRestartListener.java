@@ -30,6 +30,8 @@ import java.io.File;
 import interactivespaces.util.io.FileSupport;
 import interactivespaces.util.io.FileSupportImpl;
 
+import java.util.Map;
+
 /**
  * RestartStrategy Listener implementation for Google Earth NativeRunner. 
  *
@@ -86,10 +88,13 @@ public class EarthClientRestartListener implements RestartStrategyListener {
   @Override
   public boolean onRestartAttempt(RestartStrategy strategy, Restartable restartable, boolean restartVote) {
     log.info("Earth RestartStrategy Attempt");
+    Map<String, String> env = System.getenv();
 
     // these need to come from the config
-    earthTempDirectory = new File("/home/lg/.googleearth/Temp");
-    earthCacheDirectory = new File("/home/lg/.googleearth/Cache");
+    earthTempDirectory = new File(
+        String.format( "%s/%s", env.get("HOME"), ".googleearth/Temp") );
+    earthCacheDirectory = new File(
+        String.format( "%s/%s", env.get("HOME"), ".googleearth/Cache") );
     fileSupport.directoryExists(earthTempDirectory, "GE Temp directory failure");
     fileSupport.deleteDirectoryContents(earthTempDirectory);
     fileSupport.directoryExists(earthCacheDirectory, "GE Cache directory failure");
