@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.endpoint.lg.earth;
+package com.endpoint.lg.earth.client;
 
 import interactivespaces.InteractiveSpacesException;
 import interactivespaces.configuration.Configuration;
@@ -38,7 +38,7 @@ import interactivespaces.util.io.FileSupportImpl;
  *
  * @author Kiel Christofferson <kiel@endpoint.com>
  */
-public class EarthRestartListener implements RestartStrategyListener {
+public class EarthClientRestartListener implements RestartStrategyListener {
   /**
    * Configuration from the activity
    */
@@ -74,7 +74,7 @@ public class EarthRestartListener implements RestartStrategyListener {
    *
    * @param log
    */
-  public EarthRestartListener(Configuration config, Log log) {
+  public EarthClientRestartListener(Configuration config, Log log) {
     this.config = config;
     this.log = log;
   }

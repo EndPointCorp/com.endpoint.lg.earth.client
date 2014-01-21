@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.endpoint.lg.earth;
+package com.endpoint.lg.earth.client;
 
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 import interactivespaces.activity.component.binary.NativeActivityComponent;
@@ -38,7 +38,7 @@ import java.util.Map;
  * @author Matt Vollrath <matt@endpoint.com>
  * @author Kiel Christofferson <kiel@endpoint.com>
  */
-public class LiquidGalaxyEarthActivity extends BaseRoutableRosActivity {
+public class EarthClientActivity extends BaseRoutableRosActivity {
 
   /**
    * The folder in the activity which stores the configuration templates.
@@ -63,7 +63,7 @@ public class LiquidGalaxyEarthActivity extends BaseRoutableRosActivity {
   /**
    * Restart Strategy Listener for our native activity
    */
-  private EarthRestartListener earthRestartListener;
+  private EarthClientRestartListener earthRestartListener;
 
   /**
    * Sets up the configuration templates and adds a basic
@@ -84,7 +84,7 @@ public class LiquidGalaxyEarthActivity extends BaseRoutableRosActivity {
     // need to process "lg.earth.gui.hidden" config var and prepend --hidegui, then
     //earthComponent = new NativeActivityComponent(executablePathProperty, executableFlagsProperty);
     earthComponent = new NativeActivityComponent();
-    earthRestartListener = new EarthRestartListener(getConfiguration(), getLog());
+    earthRestartListener = new EarthClientRestartListener(getConfiguration(), getLog());
     earthRestartStrategy = new LimitedRetryRestartStrategy(4,1000,4000,getSpaceEnvironment());
 
     earthRestartStrategy.addRestartStrategyListener(earthRestartListener);
@@ -117,7 +117,7 @@ public class LiquidGalaxyEarthActivity extends BaseRoutableRosActivity {
    */
   private void writeEarthConfigs() {
     Map<String, String> env = System.getenv();
-    EarthConfiguration earthConfig = new EarthConfiguration(getConfiguration());
+    EarthClientConfiguration earthConfig = new EarthClientConfiguration(getConfiguration());
 
     JsonBuilder builder = new JsonBuilder();
     builder.put("ge", earthConfig);

@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.endpoint.lg.earth;
+package com.endpoint.lg.earth.client;
 
 import interactivespaces.configuration.Configuration;
 
@@ -25,7 +25,7 @@ import java.util.Map;
  * 
  * @author Matt Vollrath <matt@endpoint.com>
  */
-public class EarthConfiguration {
+public class EarthClientConfiguration {
   private final String CACHE_PATH = ".googleearth/Cache";
   private final String KML_PATH = ".googleearth";
 
@@ -304,61 +304,10 @@ public class EarthConfiguration {
     return window;
   }
 
-  public class EarthBorders {
-    private String coastLines;
-    private String international;
-    private String statesAndProvinces;
-    private String waterBodies;
-
-    public String getCoastLines() {
-      return coastLines;
-    }
-    public void setCoastLines(String coastLines) {
-      this.coastLines = coastLines;
-    }
-    public String getInternational() {
-      return international;
-    }
-    public void setInternational(String international) {
-      this.international = international;
-    }
-    public String getStatesAndProvinces() {
-      return statesAndProvinces;
-    }
-    public void setStatesAndProvinces(String statesAndProvinces) {
-      this.statesAndProvinces = statesAndProvinces;
-    }
-    public String getWaterBodies() {
-      return waterBodies;
-    }
-    public void setWaterBodies(String waterBodies) {
-      this.waterBodies = waterBodies;
-    }
-  }
-
-  public class EarthLayers {
-    private EarthBorders earthBorders = new EarthBorders();
-    public EarthBorders getEarthBorders() {
-      return earthBorders;
-    }
-    public void setEarthBorders(EarthBorders earthBorders) {
-      this.earthBorders = earthBorders;
-    }
-  }
-
-  public class Layers {
-    private EarthLayers earthLayers = new EarthLayers();
-    public EarthLayers getEarthLayers() {
-      return earthLayers;
-    }
-    public void setEarthLayers(EarthLayers earthLayers) {
-      this.earthLayers = earthLayers;
-    }
-  }
-
-  private Layers layers = new Layers();
-  public Layers getLayers() {
-    return layers;
+  // big pile of layer configuration classes are broken out
+  private EarthClientConfigLayers layers = new EarthClientConfigLayers();
+  public EarthClientConfigLayers getEarthClientConfigLayers() {
+  return layers;
   }
 
   /**
@@ -366,45 +315,60 @@ public class EarthConfiguration {
    * 
    * @param activityConfig
    */
-  public EarthConfiguration(final Configuration activityConfig) {
+  public EarthClientConfiguration(final Configuration activityConfig) {
     Map<String, String> env = System.getenv();
 
-    gui.setHidden(activityConfig.getRequiredPropertyString("lg.earth.gui.hidden"));
-    gui.setCompassNavigation(activityConfig.getRequiredPropertyInteger("lg.earth.gui.compassNavigation"));
-    gui.setMovementVisualization(activityConfig.getRequiredPropertyString("lg.earth.gui.movementVisualization"));
-    gui.setShowStatusBar(activityConfig.getRequiredPropertyString("lg.earth.gui.showStatusBar"));
-    gui.setFlytoSpeed(activityConfig.getRequiredPropertyDouble("lg.earth.gui.flytoSpeed"));
+    gui.setHidden(activityConfig.getRequiredPropertyString("gui.hidden"));
+    gui.setCompassNavigation(activityConfig.getRequiredPropertyInteger("gui.compassNavigation"));
+    gui.setMovementVisualization(activityConfig.getRequiredPropertyString("gui.movementVisualization"));
+    gui.setShowStatusBar(activityConfig.getRequiredPropertyString("gui.showStatusBar"));
+    gui.setFlytoSpeed(activityConfig.getRequiredPropertyDouble("gui.flytoSpeed"));
 
-    render.setAnisotropicFiltering(activityConfig.getRequiredPropertyInteger("lg.earth.render.anisotropicFiltering"));
-    render.setHighQualityTerrain(activityConfig.getRequiredPropertyString("lg.earth.render.highQualityTerrain"));
-    render.setIconSize(activityConfig.getRequiredPropertyDouble("lg.earth.render.iconSize"));
-    render.setUse3dImagery(activityConfig.getRequiredPropertyString("lg.earth.render.use3dImagery"));
+    render.setAnisotropicFiltering(activityConfig.getRequiredPropertyInteger("render.anisotropicFiltering"));
+    render.setHighQualityTerrain(activityConfig.getRequiredPropertyString("render.highQualityTerrain"));
+    render.setIconSize(activityConfig.getRequiredPropertyDouble("render.iconSize"));
+    render.setUse3dImagery(activityConfig.getRequiredPropertyString("render.use3dImagery"));
 
-    cache.setDiskSize(activityConfig.getRequiredPropertyInteger("lg.earth.cache.diskSize"));
-    cache.setMemorySize(activityConfig.getRequiredPropertyInteger("lg.earth.cache.memorySize"));
+    cache.setDiskSize(activityConfig.getRequiredPropertyInteger("cache.diskSize"));
+    cache.setMemorySize(activityConfig.getRequiredPropertyInteger("cache.memorySize"));
     cache.setLocation(activityConfig.getPropertyString(
-          "lg.earth.cache.location",
+          "cache.location",
           String.format("%s/%s", env.get("HOME"), CACHE_PATH)
           ));
 
-    launcher.setLocation(activityConfig.getRequiredPropertyString("lg.earth.launcher.location"));
+    launcher.setLocation(activityConfig.getRequiredPropertyString("launcher.location"));
 
-    kml.setSyncBase(activityConfig.getRequiredPropertyString("lg.earth.kml.syncBase"));
-    kml.setDefaultView(activityConfig.getRequiredPropertyString("lg.earth.kml.defaultView"));
-    kml.setDefaultViewLat(activityConfig.getRequiredPropertyDouble("lg.earth.kml.defaultViewLat"));
-    kml.setDefaultViewLon(activityConfig.getRequiredPropertyDouble("lg.earth.kml.defaultViewLon"));
+    kml.setSyncBase(activityConfig.getRequiredPropertyString("kml.syncBase"));
+    kml.setDefaultView(activityConfig.getRequiredPropertyString("kml.defaultView"));
+    kml.setDefaultViewLat(activityConfig.getRequiredPropertyDouble("kml.defaultViewLat"));
+    kml.setDefaultViewLon(activityConfig.getRequiredPropertyDouble("kml.defaultViewLon"));
     kml.setLocation(activityConfig.getPropertyString(
-          "lg.earth.kml.location",
+          "kml.location",
           String.format("%s/%s", env.get("HOME"), KML_PATH)
           ));
 
-    window.setName(activityConfig.getRequiredPropertyString("lg.earth.window.name"));
+    window.setName(activityConfig.getRequiredPropertyString("window.name"));
 
-    layers.earthLayers.earthBorders.setCoastLines(activityConfig.getRequiredPropertyString("lg.earth.layers.earth.borders.coastLines"));
-    layers.earthLayers.earthBorders.setInternational(activityConfig.getRequiredPropertyString("lg.earth.layers.earth.borders.international"));
-    layers.earthLayers.earthBorders.setStatesAndProvinces(activityConfig.getRequiredPropertyString("lg.earth.layers.earth.borders.statesAndProvinces"));
-    layers.earthLayers.earthBorders.setWaterBodies(activityConfig.getRequiredPropertyString("lg.earth.layers.earth.borders.waterBodies"));
-    layers.earthLayers.setEarthBorders(layers.earthLayers.earthBorders);
-    layers.setEarthLayers(layers.earthLayers);
+    layers.earthBorders.setCoastLines(activityConfig.getRequiredPropertyString("layers.earth.borders.coastLines"));
+    layers.earthBorders.setInternational(activityConfig.getRequiredPropertyString("layers.earth.borders.international"));
+    layers.earthBorders.setStatesAndProvinces(activityConfig.getRequiredPropertyString("layers.earth.borders.statesAndProvinces"));
+    layers.earthBorders.setWaterBodies(activityConfig.getRequiredPropertyString("layers.earth.borders.waterBodies"));
+    layers.setEarthBorders(layers.earthBorders);
+
+    layers.earthBuildings.setGray(activityConfig.getRequiredPropertyString("layers.earth.buildings.gray"));
+    layers.earthBuildings.setPhotoRealistic(activityConfig.getRequiredPropertyString("layers.earth.buildings.photoRealistic"));
+    layers.earthBuildings.setTrees(activityConfig.getRequiredPropertyString("layers.earth.buildings.trees"));
+    layers.setEarthBuildings(layers.earthBuildings);
+
+    layers.earthLabels.setCountries(activityConfig.getRequiredPropertyString("layers.earth.labels.countries"));
+    layers.earthLabels.setIslands(activityConfig.getRequiredPropertyString("layers.earth.labels.islands"));
+    layers.earthLabels.setLocalPlaceNames(activityConfig.getRequiredPropertyString("layers.earth.labels.localPlaceNames"));
+    layers.earthLabels.setPopulatedPlaces(activityConfig.getRequiredPropertyString("layers.earth.lables.populatedPlaces"));
+    layers.earthLabels.setRegionsAndCounties(activityConfig.getRequiredPropertyString("layers.earth.labels.regionsAndCounties"));
+    layers.earthLabels.setStatesAndProvinces(activityConfig.getRequiredPropertyString("layers.earth.labels.statesAndProvinces"));
+    layers.earthLabels.setWaterBodies(activityConfig.getRequiredPropertyString("layers.earth.labels.waterBodies"));
+    layers.setEarthLabels(layers.earthLabels);
+
+    layers.setEarthRoads(activityConfig.getRequiredPropertyString("layers.earth.roads"));
   }
 }
