@@ -306,7 +306,7 @@ public class EarthClientConfiguration {
 
   // big pile of layer configuration classes are broken out
   private EarthClientConfigLayers layers = new EarthClientConfigLayers();
-  public EarthClientConfigLayers getEarthClientConfigLayers() {
+  public EarthClientConfigLayers getLayers() {
   return layers;
   }
 
