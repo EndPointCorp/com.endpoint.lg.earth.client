@@ -17,7 +17,7 @@
 package com.endpoint.lg.earth.client;
 
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
-import interactivespaces.activity.component.binary.NativeActivityComponent;
+import interactivespaces.activity.component.binary.BasicNativeActivityComponent;
 import interactivespaces.service.template.Templater;
 import interactivespaces.service.template.TemplaterService;
 import interactivespaces.util.data.json.JsonBuilder;
@@ -53,7 +53,7 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
   /**
    * Native component for the activity, Google Earth binary
    */
-  private NativeActivityComponent earthComponent;
+  private BasicNativeActivityComponent earthComponent;
 
   /**
    * Restart Strategy for our activity runner
@@ -83,7 +83,7 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
 
     // need to process "lg.earth.gui.hidden" config var and prepend --hidegui, then
     //earthComponent = new NativeActivityComponent(executablePathProperty, executableFlagsProperty);
-    earthComponent = new NativeActivityComponent();
+    earthComponent = new BasicNativeActivityComponent();
     earthRestartListener = new EarthClientRestartListener(getConfiguration(), getLog());
     earthRestartStrategy = new LimitedRetryRestartStrategy(4,1000,4000,getSpaceEnvironment());
 
