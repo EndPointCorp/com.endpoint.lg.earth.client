@@ -78,6 +78,7 @@ public class EarthClientConfiguration {
     private String highQualityTerrain;
     private double iconSize;
     private String use3dImagery;
+    private String textureCompression;
 
     public int getAnisotropicFiltering() {
       return anisotropicFiltering;
@@ -102,6 +103,12 @@ public class EarthClientConfiguration {
     }
     public void setUse3dImagery(String use3dImagery) {
       this.use3dImagery = use3dImagery;
+    }
+    public String getTextureCompression() {
+      return textureCompression;
+    }
+    public void setTextureCompression(String textureCompression) {
+      this.textureCompression = textureCompression;
     }
   }
 
@@ -328,6 +335,7 @@ public class EarthClientConfiguration {
     render.setHighQualityTerrain(activityConfig.getRequiredPropertyString("render.highQualityTerrain"));
     render.setIconSize(activityConfig.getRequiredPropertyDouble("render.iconSize"));
     render.setUse3dImagery(activityConfig.getRequiredPropertyString("render.use3dImagery"));
+    render.setTextureCompression(activityConfig.getRequiredPropertyString("render.textureCompression"));
 
     cache.setDiskSize(activityConfig.getRequiredPropertyInteger("cache.diskSize"));
     cache.setMemorySize(activityConfig.getRequiredPropertyInteger("cache.memorySize"));

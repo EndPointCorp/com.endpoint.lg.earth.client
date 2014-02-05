@@ -96,8 +96,8 @@ StatusBarVisible=${ge.gui.showStatusBar}
 TerrainEnabled=true
 TerrainQuality=0
 TextureColors=1
-TextureCompressionDXTC=true
-TextureCompression=true
+TextureCompressionDXTC=${ge.render.textureCompression}
+TextureCompression=${ge.render.textureCompression}
 WaterSurface=true
 
 [Cache]
