@@ -16,6 +16,8 @@
 
 package com.endpoint.lg.earth.client;
 
+import com.endpoint.lg.support.window.ManagedWindow;
+
 import interactivespaces.InteractiveSpacesException;
 import interactivespaces.configuration.Configuration;
 import interactivespaces.util.process.restart.Restartable;
@@ -41,6 +43,11 @@ import java.util.Map;
  * @author Kiel Christofferson <kiel@endpoint.com>
  */
 public class EarthClientRestartListener implements RestartStrategyListener {
+  /**
+   * ManagedWindow object from the activity
+   */
+  private final ManagedWindow window;
+
   /**
    * Configuration from the activity
    */
@@ -74,9 +81,12 @@ public class EarthClientRestartListener implements RestartStrategyListener {
   /**
    * Construct the listener
    *
+   * @param window
+   * @param config
    * @param log
    */
-  public EarthClientRestartListener(Configuration config, Log log) {
+  public EarthClientRestartListener(ManagedWindow window, Configuration config, Log log) {
+    this.window = window;
     this.config = config;
     this.log = log;
   }
@@ -99,6 +109,9 @@ public class EarthClientRestartListener implements RestartStrategyListener {
     fileSupport.deleteDirectoryContents(earthTempDirectory);
     fileSupport.directoryExists(earthCacheDirectory, "GE Cache directory failure");
     fileSupport.deleteDirectoryContents(earthCacheDirectory);
+
+    // position the new window via the ManagedWindow resource
+    window.startup();
 
     // would we ever vote AGAINST restarting Earth?
     returnVote = true;

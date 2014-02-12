@@ -152,7 +152,7 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
     );
 
     earthComponent = new BasicNativeActivityComponent();
-    earthRestartListener = new EarthClientRestartListener(getConfiguration(), getLog());
+    earthRestartListener = new EarthClientRestartListener(window, getConfiguration(), getLog());
     earthRestartStrategy = new LimitedRetryRestartStrategy(4, 1000, 4000, getSpaceEnvironment());
 
     earthRestartStrategy.addRestartStrategyListener(earthRestartListener);
@@ -168,11 +168,6 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
   public void onActivityStartup() {
     writeEarthConfigs();
     earthComponent.getNativeActivityRunner().setRestartStrategy(earthRestartStrategy);
-    window.startup();
-  }
-
-  @Override
-  public void onActivityActivate() {
     window.startup();
   }
 
