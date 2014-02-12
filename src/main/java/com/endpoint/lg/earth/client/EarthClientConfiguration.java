@@ -355,7 +355,17 @@ public class EarthClientConfiguration {
           String.format("%s/%s", env.get("HOME"), KML_PATH)
           ));
 
-    window.setName(activityConfig.getRequiredPropertyString("lg.earth.window.name"));
+    if (
+        activityConfig.getPropertyString("lg.earth.window.name") != null
+        && !activityConfig.getPropertyString("lg.earth.window.name").isEmpty() ) {
+      window.setName(activityConfig.getPropertyString("lg.earth.window.name"));
+    } else if (
+        activityConfig.getPropertyString("lg.window.viewport.target") != null
+        && !activityConfig.getPropertyString("lg.window.viewport.target").isEmpty() ) {
+      window.setName(activityConfig.getPropertyString("lg.window.viewport.target"));
+    } else {
+      window.setName("generic");
+    }
 
     layers.earthBorders.setCoastLines(activityConfig.getRequiredPropertyString("lg.earth.layers.earth.borders.coastLines"));
     layers.earthBorders.setInternational(activityConfig.getRequiredPropertyString("lg.earth.layers.earth.borders.international"));
