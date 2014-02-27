@@ -52,11 +52,6 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
   private static final String CONFIG_TEMPLATES_DIRECTORY = "configTemplates";
 
   /**
-   * Configuration key for native executable
-   */
-  private static final String CONFIG_ACTIVITY_EXECUTABLE = "space.activity.component.native.executable.linux";
-
-  /**
    * Configuration key for native executable flags
    */
   private static final String CONFIG_ACTIVITY_EXECUTABLE_FLAGS = "space.activity.component.native.executable.flags.linux";
