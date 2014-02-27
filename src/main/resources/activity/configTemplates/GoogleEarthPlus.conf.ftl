@@ -1,5 +1,5 @@
 [General]
-3DControllerEnabled=true
+3DControllerEnabled=${ge.gui.use3dController}
 adsDisabled=true
 allowUnsafeBalloons=false
 AlwaysUseExternalBrowser=true
