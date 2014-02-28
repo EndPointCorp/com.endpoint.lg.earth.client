@@ -19,187 +19,272 @@ package com.endpoint.lg.earth.client;
 import com.endpoint.lg.support.window.WindowIdentity;
 import com.endpoint.lg.support.window.WindowInstanceIdentity;
 import com.endpoint.lg.support.window.ManagedWindow;
+import com.endpoint.lg.support.viewsync.EarthViewSyncState;
 
+import interactivespaces.InteractiveSpacesException;
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 import interactivespaces.activity.component.binary.BasicNativeActivityComponent;
+import interactivespaces.controller.SpaceController;
+import interactivespaces.service.ServiceRegistry;
+import interactivespaces.service.comm.network.server.UdpServerNetworkCommunicationEndpoint;
+import interactivespaces.service.comm.network.server.UdpServerNetworkCommunicationEndpointListener;
+import interactivespaces.service.comm.network.server.UdpServerNetworkCommunicationEndpointService;
+import interactivespaces.service.comm.network.server.UdpServerRequest;
 import interactivespaces.service.template.Templater;
 import interactivespaces.service.template.TemplaterService;
+import interactivespaces.system.InteractiveSpacesEnvironment;
 import interactivespaces.util.data.json.JsonBuilder;
 import interactivespaces.util.process.restart.RestartStrategy;
 import interactivespaces.util.process.restart.LimitedRetryRestartStrategy;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.Map;
 
 /**
  * An Interactive Spaces activity which starts and stops a Google Earth
  * instance.
- *
+ * 
  * <p>
  * This activity writes the Earth config templates before Earth is started up.
- *
+ * 
  * @author Keith M. Hughes
  * @author Matt Vollrath <matt@endpoint.com>
  * @author Kiel Christofferson <kiel@endpoint.com>
+ * @author Wojciech Ziniewicz <wojtek@endpoint.com>
  */
 public class EarthClientActivity extends BaseRoutableRosActivity {
 
-  /**
-   * The folder in the activity which stores the configuration templates.
-   */
-  private static final String CONFIG_TEMPLATES_DIRECTORY = "configTemplates";
+	/**
+	 * The folder in the activity which stores the configuration templates.
+	 */
+	private static final String CONFIG_TEMPLATES_DIRECTORY = "configTemplates";
 
-  /**
-   * Configuration key for native executable
-   */
-  private static final String CONFIG_ACTIVITY_EXECUTABLE = "space.activity.component.native.executable.linux";
+	/**
+	 * Configuration key for native executable
+	 */
+	private static final String CONFIG_ACTIVITY_EXECUTABLE = "space.activity.component.native.executable.linux";
 
-  /**
-   * Configuration key for native executable flags
-   */
-  private static final String CONFIG_ACTIVITY_EXECUTABLE_FLAGS = "space.activity.component.native.executable.flags.linux";
+	/**
+	 * Configuration key for native executable flags
+	 */
+	private static final String CONFIG_ACTIVITY_EXECUTABLE_FLAGS = "space.activity.component.native.executable.flags.linux";
 
-  /**
-   * Configuration key to specify window viewport
-   */
-  private static final String CONFIG_VIEWPORT_TARGET = "lg.window.viewport.target";
+	/**
+	 * Configuration key to specify window viewport
+	 */
+	private static final String CONFIG_VIEWPORT_TARGET = "lg.window.viewport.target";
 
-  /**
-   * Configuration key to override window name
-   */
-  private static final String CONFIG_WINDOW_NAME = "lg.earth.window.name";
+	/**
+	 * Configuration key to override window name
+	 */
+	private static final String CONFIG_WINDOW_NAME = "lg.earth.window.name";
 
-  /**
-   * Configuration key for hidden gui
-   */
-  private static final String CONFIG_GUI_HIDDEN = "lg.earth.gui.hidden";
+	/**
+	 * Configuration key for hidden gui
+	 */
+	private static final String CONFIG_GUI_HIDDEN = "lg.earth.gui.hidden";
 
-  /**
-   * extra flags string for Earth Client
-   */
-  private String EXTRA_EXECUTABLE_FLAGS = "";
+	/**
+	 * Configuration key for earth master
+	 */
+	private static final String CONFIG_VIEWSYNC_MASTER = "lg.earth.master";
 
-  /**
-   * Templater for the activity.
-   */
-  private Templater templater;
+	/**
+	 * Configuration viewsync port
+	 */
+	private static final String CONFIG_VIEWSYNC_PORT = "lg.earth.viewSync.port";
 
-  /**
-   * Native component for the activity, Google Earth binary
-   */
-  private BasicNativeActivityComponent earthComponent;
+	/**
+	 * extra flags string for Earth Client
+	 */
+	private String EXTRA_EXECUTABLE_FLAGS = "";
 
-  /**
-   * Restart Strategy for our activity runner
-   */
-  private RestartStrategy earthRestartStrategy;
+	/**
+	 * Templater for the activity.
+	 */
+	private Templater templater;
 
-  /**
-   * Restart Strategy Listener for our native activity
-   */
-  private EarthClientRestartListener earthRestartListener;
+	/**
+	 * Native component for the activity, Google Earth binary
+	 */
+	private BasicNativeActivityComponent earthComponent;
 
-  /**
-   * WindowIdentity for the Earth Client window
-   */
-  private WindowIdentity windowId;
+	/**
+	 * Restart Strategy for our activity runner
+	 */
+	private RestartStrategy earthRestartStrategy;
 
-  /**
-   * ManagedWindow for the Earth Client window
-   */
-  private ManagedWindow window;
+	/**
+	 * Restart Strategy Listener for our native activity
+	 */
+	private EarthClientRestartListener earthRestartListener;
 
-  /**
-   * Sets up the configuration templates and adds a basic
-   * NativeActivityComponent
-   */
-  @Override
-  public void onActivitySetup() {
-    TemplaterService service =
-      getSpaceEnvironment().getServiceRegistry().getRequiredService(TemplaterService.SERVICE_NAME);
-    File templateFolder = getActivityFilesystem().getInstallFile(CONFIG_TEMPLATES_DIRECTORY);
-    getLog().info(String.format("Template folder is: %s", templateFolder.getAbsolutePath()));
+	/**
+	 * WindowIdentity for the Earth Client window
+	 */
+	private WindowIdentity windowId;
 
-    templater = service.newTemplater(templateFolder);
-    getLog().info(String.format("Template service created: %s", templater));
+	/**
+	 * ManagedWindow for the Earth Client window
+	 */
+	private ManagedWindow window;
 
-    addManagedResource(templater);
+	/**
+	 * Sets up the configuration templates and adds a basic
+	 * NativeActivityComponent
+	 * 
+	 */
+	@Override
+	public void onActivitySetup() {
 
-    windowId = new WindowInstanceIdentity(getUuid());
-    window = new ManagedWindow(this, windowId);
-    addManagedResource(window);
+		TemplaterService service = getSpaceEnvironment().getServiceRegistry()
+				.getRequiredService(TemplaterService.SERVICE_NAME);
+		File templateFolder = getActivityFilesystem().getInstallFile(
+				CONFIG_TEMPLATES_DIRECTORY);
+		getLog().info(
+				String.format("Template folder is: %s",
+						templateFolder.getAbsolutePath()));
 
-    // handle window name or viewport target values from activity config
-    if (
-        getConfiguration().getPropertyString(CONFIG_WINDOW_NAME) != null
-        && !getConfiguration().getPropertyString(CONFIG_WINDOW_NAME).isEmpty() ) {
-      EXTRA_EXECUTABLE_FLAGS += String.format(" -name $s", getConfiguration().getPropertyString(CONFIG_WINDOW_NAME) );
-    } else if (
-        getConfiguration().getPropertyString(CONFIG_VIEWPORT_TARGET) != null
-        && !getConfiguration().getPropertyString(CONFIG_VIEWPORT_TARGET).isEmpty() ) {
-      EXTRA_EXECUTABLE_FLAGS += String.format(" -name %s", getUuid() );
-    }
+		templater = service.newTemplater(templateFolder);
+		getLog().info(String.format("Template service created: %s", templater));
 
-    // handle lg.earth.gui.hidden boolean from activity config
-    if ( Boolean.TRUE.equals(getConfiguration().getRequiredPropertyBoolean(CONFIG_GUI_HIDDEN)) ) {
-      EXTRA_EXECUTABLE_FLAGS += " --hidegui";
-    }
+		addManagedResource(templater);
 
-    // update activity executable flags configuration with EXTRA flags
-    getConfiguration().setValue(
-      CONFIG_ACTIVITY_EXECUTABLE_FLAGS,
-      String.format("%s %s", EXTRA_EXECUTABLE_FLAGS, getConfiguration().getRequiredPropertyString(CONFIG_ACTIVITY_EXECUTABLE_FLAGS))
-    );
+		windowId = new WindowInstanceIdentity(getUuid());
+		window = new ManagedWindow(this, windowId);
+		addManagedResource(window);
 
-    earthComponent = new BasicNativeActivityComponent();
-    earthRestartListener = new EarthClientRestartListener(window, getConfiguration(), getLog());
-    earthRestartStrategy = new LimitedRetryRestartStrategy(4, 1000, 4000, getSpaceEnvironment());
+		// handle window name or viewport target values from activity config
+		if (getConfiguration().getPropertyString(CONFIG_WINDOW_NAME) != null
+				&& !getConfiguration().getPropertyString(CONFIG_WINDOW_NAME)
+						.isEmpty()) {
+			EXTRA_EXECUTABLE_FLAGS += String.format(" -name $s",
+					getConfiguration().getPropertyString(CONFIG_WINDOW_NAME));
+		} else if (getConfiguration().getPropertyString(CONFIG_VIEWPORT_TARGET) != null
+				&& !getConfiguration()
+						.getPropertyString(CONFIG_VIEWPORT_TARGET).isEmpty()) {
+			EXTRA_EXECUTABLE_FLAGS += String.format(" -name %s", getUuid());
+		}
 
-    earthRestartStrategy.addRestartStrategyListener(earthRestartListener);
-    addActivityComponent(earthComponent);
-  }
+		// handle lg.earth.gui.hidden boolean from activity config
+		if (Boolean.TRUE.equals(getConfiguration().getRequiredPropertyBoolean(
+				CONFIG_GUI_HIDDEN))) {
+			EXTRA_EXECUTABLE_FLAGS += " --hidegui";
+		}
 
-  /**
-   * Activity Startup
-   *
-   * TODO: move pieces into Setup() when 1.5.4 is released
-   */
-  @Override
-  public void onActivityStartup() {
-    writeEarthConfigs();
-    earthComponent.getNativeActivityRunner().setRestartStrategy(earthRestartStrategy);
-    window.startup();
-  }
+		// update activity executable flags configuration with EXTRA flags
+		getConfiguration().setValue(
+				CONFIG_ACTIVITY_EXECUTABLE_FLAGS,
+				String.format(
+						"%s %s",
+						EXTRA_EXECUTABLE_FLAGS,
+						getConfiguration().getRequiredPropertyString(
+								CONFIG_ACTIVITY_EXECUTABLE_FLAGS)));
 
-  /**
-   * Handles configuration changes.
-   *
-   * @param update configuration updates
-   */
-  @Override
-  public void onActivityConfigurationUpdate(Map<String, Object> update) {
-    writeEarthConfigs();
-  }
+		earthComponent = new BasicNativeActivityComponent();
+		earthRestartListener = new EarthClientRestartListener(window,
+				getConfiguration(), getLog());
+		earthRestartStrategy = new LimitedRetryRestartStrategy(4, 1000, 4000,
+				getSpaceEnvironment());
 
-  /**
-   * Writes out the Earth Configs.
-   */
-  private void writeEarthConfigs() {
-    Map<String, String> env = System.getenv();
-    EarthClientConfiguration earthConfig = new EarthClientConfiguration(getConfiguration());
+		earthRestartStrategy.addRestartStrategyListener(earthRestartListener);
+		addActivityComponent(earthComponent);
+	}
 
-    JsonBuilder builder = new JsonBuilder();
-    builder.put("ge", earthConfig);
+	/**
+	 * Activity Startup Initializes UDP TODO: move pieces into Setup() when
+	 * 1.5.4 is released
+	 */
+	@Override
+	public void onActivityStartup() {
+		if (getConfiguration().getRequiredPropertyBoolean(CONFIG_VIEWSYNC_MASTER) == true) {
+			try {
+				SpaceController controller = getController();
+				InteractiveSpacesEnvironment environment = controller
+						.getSpaceEnvironment();
 
-    getLog().info(builder.toString());
+				ServiceRegistry registry = environment.getServiceRegistry();
+				UdpServerNetworkCommunicationEndpointService udpServerService = registry
+						.getService(UdpServerNetworkCommunicationEndpointService.NAME);
 
-    templater.writeTemplate( "GoogleEarthPlus.conf.ftl", builder.build(), new File(
-          String.format( "%s/%s", env.get("HOME"), ".config/Google/GoogleEarthPlus.conf") ));
-    templater.writeTemplate( "GECommonSettings.conf.ftl", builder.build(), new File(
-          String.format("%s/%s", env.get("HOME"), ".config/Google/GECommonSettings.conf") ));
-    templater.writeTemplate( "myplaces.kml.ftl", builder.build(), new File(
-          String.format("%s/%s", env.get("HOME"), ".googleearth/myplaces.kml")));
-    templater.writeTemplate( "cached_default_view.kml.ftl", builder.build(), new File(
-          String.format("%s/%s", env.get("HOME"), ".googleearth/cached_default_view.kml") ));
-  }
+				Integer viewSyncPort = Integer.parseInt(getConfiguration()
+						.getPropertyString(CONFIG_VIEWSYNC_PORT));
+
+				UdpServerNetworkCommunicationEndpoint udpServer = udpServerService
+						.newServer(viewSyncPort, getLog());
+
+				udpServer
+						.addListener(new UdpServerNetworkCommunicationEndpointListener() {
+							public void onUdpRequest(
+									UdpServerNetworkCommunicationEndpoint endpoint,
+									UdpServerRequest request) {
+								String viewsyncData = new String(request
+										.getRequest());
+								EarthViewSyncState state = new EarthViewSyncState(
+										viewsyncData);
+								sendOutputJsonBuilder("viewsync",
+										state.getJsonBuilder());
+								getLog().info("Added UDP ViewSync listener");
+							}
+						});
+
+			} catch (InteractiveSpacesException e) {
+				getLog().error("Could not set up UDP ViewSync listener");
+			}
+		}
+
+		writeEarthConfigs();
+		earthComponent.getNativeActivityRunner().setRestartStrategy(
+				earthRestartStrategy);
+		window.startup();
+	}
+
+	/**
+	 * Handles configuration changes.
+	 * 
+	 * @param update
+	 *            configuration updates
+	 */
+	@Override
+	public void onActivityConfigurationUpdate(Map<String, Object> update) {
+		writeEarthConfigs();
+	}
+
+	/**
+	 * Writes out the Earth Configs.
+	 */
+	private void writeEarthConfigs() {
+		Map<String, String> env = System.getenv();
+		EarthClientConfiguration earthConfig = new EarthClientConfiguration(
+				getConfiguration());
+
+		JsonBuilder builder = new JsonBuilder();
+		builder.put("ge", earthConfig);
+
+		getLog().info(builder.toString());
+
+		templater.writeTemplate(
+				"GoogleEarthPlus.conf.ftl",
+				builder.build(),
+				new File(String.format("%s/%s", env.get("HOME"),
+						".config/Google/GoogleEarthPlus.conf")));
+		templater.writeTemplate(
+				"GECommonSettings.conf.ftl",
+				builder.build(),
+				new File(String.format("%s/%s", env.get("HOME"),
+						".config/Google/GECommonSettings.conf")));
+		templater.writeTemplate(
+				"myplaces.kml.ftl",
+				builder.build(),
+				new File(String.format("%s/%s", env.get("HOME"),
+						".googleearth/myplaces.kml")));
+		templater.writeTemplate(
+				"cached_default_view.kml.ftl",
+				builder.build(),
+				new File(String.format("%s/%s", env.get("HOME"),
+						".googleearth/cached_default_view.kml")));
+	}
 }
