@@ -18,7 +18,7 @@ package com.endpoint.lg.earth.client;
 
 import interactivespaces.configuration.Configuration;
 
-import java.util.Map;
+import java.io.File;
 
 /**
  * A configuration for Earth.
@@ -26,8 +26,6 @@ import java.util.Map;
  * @author Matt Vollrath <matt@endpoint.com>
  */
 public class EarthClientConfiguration {
-  private final String CACHE_PATH = ".googleearth/Cache";
-  private final String KML_PATH = ".googleearth";
 
   public class Gui {
     private String hidden;
@@ -329,8 +327,7 @@ public class EarthClientConfiguration {
    * 
    * @param activityConfig
    */
-  public EarthClientConfiguration(final Configuration activityConfig) {
-    Map<String, String> env = System.getenv();
+  public EarthClientConfiguration(final Configuration activityConfig, final File earthDotDirectory) {
 
     gui.setHidden(activityConfig.getRequiredPropertyString("lg.earth.gui.hidden"));
     gui.setCompassNavigation(activityConfig.getRequiredPropertyInteger("lg.earth.gui.compassNavigation"));
@@ -349,8 +346,8 @@ public class EarthClientConfiguration {
     cache.setMemorySize(activityConfig.getRequiredPropertyInteger("lg.earth.cache.memorySize"));
     cache.setLocation(activityConfig.getPropertyString(
           "lg.earth.cache.location",
-          String.format("%s/%s", env.get("HOME"), CACHE_PATH)
-          ));
+          String.format("%s/%s", earthDotDirectory, "Cache")
+        ));
 
     launcher.setLocation(activityConfig.getRequiredPropertyString("lg.earth.launcher.location"));
 
@@ -360,8 +357,8 @@ public class EarthClientConfiguration {
     kml.setDefaultViewLon(activityConfig.getRequiredPropertyDouble("lg.earth.kml.defaultViewLon"));
     kml.setLocation(activityConfig.getPropertyString(
           "lg.earth.kml.location",
-          String.format("%s/%s", env.get("HOME"), KML_PATH)
-          ));
+          String.format("%s", earthDotDirectory)
+        ));
 
     if (
         activityConfig.getPropertyString("lg.earth.window.name") != null

@@ -160,7 +160,7 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
     // update activity executable flags configuration with EXTRA flags
     getConfiguration().setValue(
       CONFIG_ACTIVITY_EXECUTABLE_FLAGS,
-      String.format("%s %s", EXTRA_EXECUTABLE_FLAGS, getConfiguration().getRequiredPropertyString(CONFIG_ACTIVITY_EXECUTABLE_FLAGS))
+      String.format("%s %s", getConfiguration().getRequiredPropertyString(CONFIG_ACTIVITY_EXECUTABLE_FLAGS), EXTRA_EXECUTABLE_FLAGS)
     );
 
     earthComponent = new BasicNativeActivityComponent();
@@ -197,18 +197,18 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
    * Writes out the Earth Configs.
    */
   private void writeEarthConfigs() {
-    Map<String, String> env = System.getenv();
-    EarthClientConfiguration earthConfig = new EarthClientConfiguration(getConfiguration());
+
+    earthConfigDirectory = new File(
+        String.format("%s/%s", getActivityFilesystem().getInstallDirectory(), "earth/.config/Google" ) );
+    earthDotDirectory = new File(
+        String.format("%s/%s", getActivityFilesystem().getInstallDirectory(), "earth/.googleearth" ) );
+
+    EarthClientConfiguration earthConfig = new EarthClientConfiguration(getConfiguration(), earthDotDirectory);
 
     JsonBuilder builder = new JsonBuilder();
     builder.put("ge", earthConfig);
 
     getLog().info(builder.toString());
-
-    earthConfigDirectory = new File(
-        String.format( "%s/%s", env.get("HOME"), ".config/Google") );
-    earthDotDirectory = new File(
-        String.format( "%s/%s", env.get("HOME"), ".googleearth") );
 
     fileSupport.directoryExists(earthConfigDirectory, "GE Config directory failure");
     fileSupport.directoryExists(earthDotDirectory, "GE .googleearth directory failure");
@@ -221,5 +221,6 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
           String.format("%s/%s", earthDotDirectory, "myplaces.kml")));
     templater.writeTemplate( "cached_default_view.kml.ftl", builder.build(), new File(
           String.format("%s/%s", earthDotDirectory, "cached_default_view.kml") ));
+
   }
 }
