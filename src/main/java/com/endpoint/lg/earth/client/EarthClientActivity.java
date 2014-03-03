@@ -36,6 +36,8 @@ import interactivespaces.system.InteractiveSpacesEnvironment;
 import interactivespaces.util.data.json.JsonBuilder;
 import interactivespaces.util.process.restart.RestartStrategy;
 import interactivespaces.util.process.restart.LimitedRetryRestartStrategy;
+import interactivespaces.util.io.FileSupport;
+import interactivespaces.util.io.FileSupportImpl;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -133,6 +135,21 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
    * ManagedWindow for the Earth Client window
    */
   private ManagedWindow window;
+
+  /**
+   * Config directory for Earth
+   */
+  private File earthConfigDirectory;
+
+  /**
+   * Dot directory for Earth
+   */
+  private File earthDotDirectory;
+
+  /**
+   * file support to use for file operations
+   */
+  private final FileSupport fileSupport = FileSupportImpl.INSTANCE;
 
   /**
    * Sets up the configuration templates and adds a basic
@@ -250,13 +267,21 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
 
     getLog().info(builder.toString());
 
-    templater.writeTemplate("GoogleEarthPlus.conf.ftl", builder.build(),
-        new File(String.format("%s/%s", env.get("HOME"), ".config/Google/GoogleEarthPlus.conf")));
-    templater.writeTemplate("GECommonSettings.conf.ftl", builder.build(),
-        new File(String.format("%s/%s", env.get("HOME"), ".config/Google/GECommonSettings.conf")));
-    templater.writeTemplate("myplaces.kml.ftl", builder.build(),
-        new File(String.format("%s/%s", env.get("HOME"), ".googleearth/myplaces.kml")));
-    templater.writeTemplate("cached_default_view.kml.ftl", builder.build(),
-        new File(String.format("%s/%s", env.get("HOME"), ".googleearth/cached_default_view.kml")));
+    earthConfigDirectory = new File(
+        String.format( "%s/%s", env.get("HOME"), ".config/Google") );
+    earthDotDirectory = new File(
+        String.format( "%s/%s", env.get("HOME"), ".googleearth") );
+
+    fileSupport.directoryExists(earthConfigDirectory, "GE Config directory failure");
+    fileSupport.directoryExists(earthDotDirectory, "GE .googleearth directory failure");
+
+    templater.writeTemplate( "GoogleEarthPlus.conf.ftl", builder.build(), new File(
+          String.format( "%s/%s", earthConfigDirectory, "GoogleEarthPlus.conf") ));
+    templater.writeTemplate( "GECommonSettings.conf.ftl", builder.build(), new File(
+          String.format("%s/%s", earthConfigDirectory, "GECommonSettings.conf") ));
+    templater.writeTemplate( "myplaces.kml.ftl", builder.build(), new File(
+          String.format("%s/%s", earthDotDirectory, "myplaces.kml")));
+    templater.writeTemplate( "cached_default_view.kml.ftl", builder.build(), new File(
+          String.format("%s/%s", earthDotDirectory, "cached_default_view.kml") ));
   }
 }

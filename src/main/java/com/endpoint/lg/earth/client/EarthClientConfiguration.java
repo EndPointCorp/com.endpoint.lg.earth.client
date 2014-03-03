@@ -35,6 +35,7 @@ public class EarthClientConfiguration {
     private String movementVisualization;
     private String showStatusBar;
     private double flytoSpeed;
+    private String use3dController;
 
     public String getHidden() {
       return hidden;
@@ -65,6 +66,12 @@ public class EarthClientConfiguration {
     }
     public void setFlytoSpeed(double flytoSpeed) {
       this.flytoSpeed = flytoSpeed;
+    }
+    public String getUse3dController() {
+      return use3dController;
+    }
+    public void setUse3dController(String use3dController) {
+      this.use3dController = use3dController;
     }
   }
 
@@ -330,6 +337,7 @@ public class EarthClientConfiguration {
     gui.setMovementVisualization(activityConfig.getRequiredPropertyString("lg.earth.gui.movementVisualization"));
     gui.setShowStatusBar(activityConfig.getRequiredPropertyString("lg.earth.gui.showStatusBar"));
     gui.setFlytoSpeed(activityConfig.getRequiredPropertyDouble("lg.earth.gui.flytoSpeed"));
+    gui.setUse3dController(activityConfig.getRequiredPropertyString("lg.earth.gui.use3dController"));
 
     render.setAnisotropicFiltering(activityConfig.getRequiredPropertyInteger("lg.earth.render.anisotropicFiltering"));
     render.setHighQualityTerrain(activityConfig.getRequiredPropertyString("lg.earth.render.highQualityTerrain"));

@@ -1,5 +1,5 @@
 [General]
-3DControllerEnabled=true
+3DControllerEnabled=${ge.gui.use3dController}
 adsDisabled=true
 allowUnsafeBalloons=false
 AlwaysUseExternalBrowser=true
@@ -14,11 +14,11 @@ GroundLevelAutoTransition=false
 InvertMouseWheel=false
 kmlErrorHandling=0
 KMLPath=${ge.kml.location}
-lastHeight=1080
+lastHeight=1920
 lastLeft=0
 lastTip=3
 lastTop=0
-lastWidth=1920
+lastWidth=1080
 layersOpen=true
 LogoutClean=true
 mouseWheelSpeed=1
