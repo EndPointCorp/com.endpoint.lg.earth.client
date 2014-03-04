@@ -1,0 +1,82 @@
+#!/bin/bash
+# vim:set ai sts=4 ts=4 sw=4 expandtab filetype=sh:
+#
+# Kiel Christofferson <kiel@endpoint.com>
+#
+SELF="$( basename $0 )"
+
+# getopt to parse command-line, options documented in HELP_TEXT
+TMP_OPT=`getopt -s bash -o 'h' \
+        -l 'help,home-dir:,earth-dir:,earth-ver:' \
+        -n 'google-earth-exec' -- "$@"`
+if [ $? != 0 ] ; then error_msg "Terminating..." >&2 ; exit 1 ; fi
+
+# Note the quotes around $TMP_OPT: they are essential!
+eval set -- "${TMP_OPT}"
+
+HELP_TEXT="
+${SELF}: wraps the launch of the Google Earth binary to allow us to select versions
+         from local install base and to supply some environment options before exec
+
+    options:
+        [-h|--help]
+            help message
+
+        [--home-dir <home-dir>]
+            export the HOME environment variable before exec
+
+        [--earth-dir <earth-dir>]
+            Supply local install base for versions of Earth
+            default: /opt/google/earth
+
+        [--earth-ver <earth-ver>]
+            Supply version of earth to use from local install base
+            default: \"free\" (latest installed)
+
+"
+
+while true ; do
+    case "$1" in
+        -h|--help)    echo "${HELP_TEXT}"; shift; exit 0;; 
+        --earth-dir)  CMD_EARTH_DIR="$2";  shift 2;; 
+        --earth-ver)  CMD_EARTH_VER="$2";  shift 2;; 
+        --home-dir)   CMD_HOME_DIR="$2";   shift 2;; 
+        --)           shift ; break ;;
+        *)            error_msg "Internal error!" ; exit 1 ;;
+    esac
+done
+
+#if [ -n "${@}" ]; then echo "Remaining arguments: \"$@\""; fi
+
+EARTH_ALL=""
+PREFERRED_BIN=""
+
+_discover_bin_versions() {
+    local _earth_dir="${1:-${CMD_EARTH_DIR}}"
+    local _earth_all="$( find "${_earth_dir}" -iname 'googleearth-bin' 2>/dev/null | sort --reverse --sort=version )"
+    EARTH_ALL="${_earth_all}"
+}
+
+_discover_pref_version() {
+    local _pref_ver="${1:-free}"
+    for _earth_ver in ${EARTH_ALL}; do
+        if [ -r "${_earth_ver}" ] && [[ "${_earth_ver}" =~ ${_pref_ver} ]]; then
+            echo "found ${_earth_ver}"
+            PREFERRED_BIN="${_earth_ver}"
+            break
+        fi
+    done
+}
+
+_googleearth_bin_exec() {
+    local _fullbinpath="${1:-/opt/google/earth/free/googleeearth-bin}"
+    local _fullbindir="$( dirname "${_fullbinpath}" )"
+    # ALWAYS shift the first positional argument away
+    shift
+    cd "${_fullbindir}"
+    HOME="${CMD_HOME_DIR:-${HOME}}" LD_LIBRARY_PATH=".:${LD_LIBRARY_PATH}" exec ./googleearth-bin $@
+}
+
+_discover_bin_versions "${CMD_EARTH_DIR:-/opt/google/earth}"
+_discover_pref_version "${CMD_EARTH_VER:-free}"
+_googleearth_bin_exec "${PREFERRED_BIN}" "${@}"
