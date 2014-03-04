@@ -94,6 +94,7 @@ public class EarthClientRestartListener implements RestartStrategyListener {
   /**
    * Restart attempt callback
    *   purge cache directories
+   *   and re-manage the window
    */
   @Override
   public boolean onRestartAttempt(RestartStrategy strategy, Restartable restartable, boolean restartVote) {
