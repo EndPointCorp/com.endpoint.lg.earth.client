@@ -204,15 +204,16 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
         UdpBroadcastClientNetworkCommunicationEndpoint udpBcastClient =
           udpCommService.newBroadcastClient(viewSyncPort, getLog());
 
+        // TODO: refactor Listener code into separate source file
         udpBcastClient.addListener(
           new UdpBroadcastClientNetworkCommunicationEndpointListener() {
             public void onUdpMessage(UdpBroadcastClientNetworkCommunicationEndpoint endpoint,
               byte[] message,
               InetSocketAddress remoteAddress) {
-                String viewSyncData = new String(message.toString());
-                getLog().info(String.format("%s %s", "send viewsync message:", viewSyncData));
-                //EarthViewSyncState state = new EarthViewSyncState(viewSyncData);
-                //sendOutputJsonBuilder("viewsync", state.getJsonBuilder());
+                String viewSyncData = new String(message);
+                getLog().debug(String.format("%s %s", "send viewsync message:", viewSyncData));
+                EarthViewSyncState state = new EarthViewSyncState(viewSyncData);
+                sendOutputJsonBuilder("viewsync_output", state.getJsonBuilder());
               }
           }
         );
