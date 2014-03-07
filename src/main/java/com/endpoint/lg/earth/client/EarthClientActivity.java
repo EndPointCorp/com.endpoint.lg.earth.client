@@ -280,4 +280,14 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
           String.format("%s/%s", earthDotDirectory, "cached_default_view.kml") ));
 
   }
+
+  @Override
+  public void onActivityActivate() {
+    window.activate();
+  }
+
+  @Override
+  public void onActivityDeactivate() {
+    window.deactivate();
+  }
 }
