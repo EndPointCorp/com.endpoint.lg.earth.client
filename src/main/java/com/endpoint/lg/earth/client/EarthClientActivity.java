@@ -233,7 +233,6 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
         getLog().error("Could not set up UDP ViewSync listener");
       }
     }
-
   }
 
   /**
@@ -244,7 +243,6 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
   public void onActivityStartup() {
     writeEarthConfigs();
     earthComponent.getNativeActivityRunner().setRestartStrategy(earthRestartStrategy);
-    //udpBcastClient.startup();
   }
 
   /**
