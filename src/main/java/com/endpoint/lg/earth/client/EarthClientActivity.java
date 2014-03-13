@@ -101,11 +101,6 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
   private static final String CONFIG_SPACENAV_FLAGS = "lg.earth.spaceNavigator.flags";
 
   /**
-   * extra flags string for Earth Client
-   */
-  private String EXTRA_EXECUTABLE_FLAGS = "";
-
-  /**
    * Templater for the activity.
    */
   private Templater templater;
@@ -174,24 +169,26 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
 
     addManagedResource(window);
 
+    String extraEarthFlags = "";
+
     // only set SpaceNav flags if configured
     if (!getConfiguration().getRequiredPropertyString(CONFIG_SPACENAV_DEVICE).equals("")) {
-      EXTRA_EXECUTABLE_FLAGS += getConfiguration().getRequiredPropertyString(CONFIG_SPACENAV_FLAGS);
+      extraEarthFlags += getConfiguration().getRequiredPropertyString(CONFIG_SPACENAV_FLAGS);
     }
 
     // handle window name or viewport target values from activity config
     if (getConfiguration().getPropertyString(CONFIG_WINDOW_NAME) != null
         && !getConfiguration().getPropertyString(CONFIG_WINDOW_NAME).isEmpty()) {
-      EXTRA_EXECUTABLE_FLAGS +=
+      extraEarthFlags +=
           String.format(" -name $s", getConfiguration().getPropertyString(CONFIG_WINDOW_NAME));
     } else if (getConfiguration().getPropertyString(CONFIG_VIEWPORT_TARGET) != null
         && !getConfiguration().getPropertyString(CONFIG_VIEWPORT_TARGET).isEmpty()) {
-      EXTRA_EXECUTABLE_FLAGS += String.format(" -name %s", getUuid());
+      extraEarthFlags += String.format(" -name %s", getUuid());
     }
 
     // handle lg.earth.gui.hidden boolean from activity config
     if (Boolean.TRUE.equals(getConfiguration().getRequiredPropertyBoolean(CONFIG_GUI_HIDDEN))) {
-      EXTRA_EXECUTABLE_FLAGS += " --hidegui";
+      extraEarthFlags += " --hidegui";
     }
 
     // update activity executable flags configuration with EXTRA flags
@@ -199,7 +196,7 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
         CONFIG_ACTIVITY_EXECUTABLE_FLAGS,
         String.format("%s %s",
             getConfiguration().getRequiredPropertyString(CONFIG_ACTIVITY_EXECUTABLE_FLAGS),
-            EXTRA_EXECUTABLE_FLAGS));
+            extraEarthFlags));
 
     earthComponent = new BasicNativeActivityComponent();
     earthRestartListener = new EarthClientRestartListener(window, getConfiguration(), getLog());
