@@ -91,6 +91,16 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
   private static final String CONFIG_VIEWSYNC_PORT = "lg.earth.viewSync.port";
 
   /**
+   * Configuration key for SpaceNav device
+   */
+  private static final String CONFIG_SPACENAV_DEVICE = "lg.earth.spaceNavigator.device";
+
+  /**
+   * Configuration key for SpaceNav flags
+   */
+  private static final String CONFIG_SPACENAV_FLAGS = "lg.earth.spaceNavigator.flags";
+
+  /**
    * extra flags string for Earth Client
    */
   private String EXTRA_EXECUTABLE_FLAGS = "";
@@ -163,6 +173,11 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
     window = new ManagedWindow(this, windowId);
 
     addManagedResource(window);
+
+    // only set SpaceNav flags if configured
+    if (!getConfiguration().getRequiredPropertyString(CONFIG_SPACENAV_DEVICE).equals("")) {
+      EXTRA_EXECUTABLE_FLAGS += getConfiguration().getRequiredPropertyString(CONFIG_SPACENAV_FLAGS);
+    }
 
     // handle window name or viewport target values from activity config
     if (getConfiguration().getPropertyString(CONFIG_WINDOW_NAME) != null
