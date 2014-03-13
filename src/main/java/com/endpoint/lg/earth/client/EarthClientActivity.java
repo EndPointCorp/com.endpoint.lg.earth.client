@@ -86,7 +86,7 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
   private static final String CONFIG_VIEWSYNC_SEND = "lg.earth.viewSync.send";
 
   /**
-   * Configuration key for  viewsync "port"
+   * Configuration key for viewsync "port"
    */
   private static final String CONFIG_VIEWSYNC_PORT = "lg.earth.viewSync.port";
 
@@ -198,8 +198,8 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
     getConfiguration().setValue(
         CONFIG_ACTIVITY_EXECUTABLE_FLAGS,
         String.format("%s %s",
-          getConfiguration().getRequiredPropertyString(CONFIG_ACTIVITY_EXECUTABLE_FLAGS),
-          EXTRA_EXECUTABLE_FLAGS));
+            getConfiguration().getRequiredPropertyString(CONFIG_ACTIVITY_EXECUTABLE_FLAGS),
+            EXTRA_EXECUTABLE_FLAGS));
 
     earthComponent = new BasicNativeActivityComponent();
     earthRestartListener = new EarthClientRestartListener(window, getConfiguration(), getLog());
@@ -211,28 +211,25 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
     if (getConfiguration().getRequiredPropertyBoolean(CONFIG_VIEWSYNC_SEND) == true) {
       try {
         Integer viewSyncPort =
-          Integer.parseInt(getConfiguration().getPropertyString(CONFIG_VIEWSYNC_PORT));
+            Integer.parseInt(getConfiguration().getPropertyString(CONFIG_VIEWSYNC_PORT));
 
         UdpClientNetworkCommunicationEndpointService udpCommService =
-          getSpaceEnvironment().getServiceRegistry()
-            .getService(UdpClientNetworkCommunicationEndpointService.NAME);
+            getSpaceEnvironment().getServiceRegistry().getService(
+                UdpClientNetworkCommunicationEndpointService.NAME);
 
         UdpBroadcastClientNetworkCommunicationEndpoint udpBcastClient =
-          udpCommService.newBroadcastClient(viewSyncPort, getLog());
+            udpCommService.newBroadcastClient(viewSyncPort, getLog());
 
         // TODO: refactor Listener code into separate source file
-        udpBcastClient.addListener(
-          new UdpBroadcastClientNetworkCommunicationEndpointListener() {
-            public void onUdpMessage(UdpBroadcastClientNetworkCommunicationEndpoint endpoint,
-              byte[] message,
-              InetSocketAddress remoteAddress) {
-                String viewSyncData = new String(message);
-                getLog().debug(String.format("%s %s", "send viewsync message:", viewSyncData));
-                EarthViewSyncState state = new EarthViewSyncState(viewSyncData);
-                sendOutputJsonBuilder("viewsync_output", state.getJsonBuilder());
-              }
+        udpBcastClient.addListener(new UdpBroadcastClientNetworkCommunicationEndpointListener() {
+          public void onUdpMessage(UdpBroadcastClientNetworkCommunicationEndpoint endpoint,
+              byte[] message, InetSocketAddress remoteAddress) {
+            String viewSyncData = new String(message);
+            getLog().debug(String.format("%s %s", "send viewsync message:", viewSyncData));
+            EarthViewSyncState state = new EarthViewSyncState(viewSyncData);
+            sendOutputJsonBuilder("viewsync_output", state.getJsonBuilder());
           }
-        );
+        });
         addManagedResource(udpBcastClient);
         getLog().info("Added UDP ViewSync listener");
       } catch (InteractiveSpacesException e) {
@@ -269,12 +266,15 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
    */
   private void writeEarthConfigs() {
 
-    earthConfigDirectory = new File(
-        String.format("%s/%s", getActivityFilesystem().getInstallDirectory(), "earth/.config/Google" ) );
-    earthDotDirectory = new File(
-        String.format("%s/%s", getActivityFilesystem().getInstallDirectory(), "earth/.googleearth" ) );
+    earthConfigDirectory =
+        new File(String.format("%s/%s", getActivityFilesystem().getInstallDirectory(),
+            "earth/.config/Google"));
+    earthDotDirectory =
+        new File(String.format("%s/%s", getActivityFilesystem().getInstallDirectory(),
+            "earth/.googleearth"));
 
-    EarthClientConfiguration earthConfig = new EarthClientConfiguration(getConfiguration(), earthDotDirectory);
+    EarthClientConfiguration earthConfig =
+        new EarthClientConfiguration(getConfiguration(), earthDotDirectory);
 
     JsonBuilder builder = new JsonBuilder();
     builder.put("ge", earthConfig);
@@ -284,14 +284,14 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
     fileSupport.directoryExists(earthConfigDirectory, "GE Config directory failure");
     fileSupport.directoryExists(earthDotDirectory, "GE .googleearth directory failure");
 
-    templater.writeTemplate( "GoogleEarthPlus.conf.ftl", builder.build(), new File(
-          String.format( "%s/%s", earthConfigDirectory, "GoogleEarthPlus.conf") ));
-    templater.writeTemplate( "GECommonSettings.conf.ftl", builder.build(), new File(
-          String.format("%s/%s", earthConfigDirectory, "GECommonSettings.conf") ));
-    templater.writeTemplate( "myplaces.kml.ftl", builder.build(), new File(
-          String.format("%s/%s", earthDotDirectory, "myplaces.kml")));
-    templater.writeTemplate( "cached_default_view.kml.ftl", builder.build(), new File(
-          String.format("%s/%s", earthDotDirectory, "cached_default_view.kml") ));
+    templater.writeTemplate("GoogleEarthPlus.conf.ftl", builder.build(),
+        new File(String.format("%s/%s", earthConfigDirectory, "GoogleEarthPlus.conf")));
+    templater.writeTemplate("GECommonSettings.conf.ftl", builder.build(),
+        new File(String.format("%s/%s", earthConfigDirectory, "GECommonSettings.conf")));
+    templater.writeTemplate("myplaces.kml.ftl", builder.build(),
+        new File(String.format("%s/%s", earthDotDirectory, "myplaces.kml")));
+    templater.writeTemplate("cached_default_view.kml.ftl", builder.build(),
+        new File(String.format("%s/%s", earthDotDirectory, "cached_default_view.kml")));
 
   }
 
