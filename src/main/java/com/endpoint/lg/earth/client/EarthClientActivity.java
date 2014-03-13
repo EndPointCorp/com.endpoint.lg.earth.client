@@ -235,7 +235,6 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
   public void onActivityStartup() {
     writeEarthConfigs();
     earthComponent.getNativeActivityRunner().setRestartStrategy(earthRestartStrategy);
-    window.startup();
     //udpBcastClient.startup();
   }
 
@@ -283,11 +282,11 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
 
   @Override
   public void onActivityActivate() {
-    window.activate();
+    window.setVisible(true);
   }
 
   @Override
   public void onActivityDeactivate() {
-    window.deactivate();
+    window.setVisible(false);
   }
 }
