@@ -34,7 +34,7 @@
                 <NetworkLink>
                     <name>KML Update CMS</name>
                     <Link>
-                        <href>${ge.kml.syncBase}/update.kml?window_name=${ge.window.name}</href>
+                        <href>${ge.kml.syncBase}/network_link_update.kml?window_slug=${ge.window.name}</href>
                         <refreshMode>onInterval</refreshMode>
                         <refreshInterval>1</refreshInterval>
                         <viewRefreshMode>onStop</viewRefreshMode>
