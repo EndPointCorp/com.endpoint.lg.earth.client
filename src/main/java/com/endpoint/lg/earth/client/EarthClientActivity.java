@@ -21,8 +21,9 @@ import com.endpoint.lg.support.window.WindowInstanceIdentity;
 import com.endpoint.lg.support.window.ManagedWindow;
 import com.endpoint.lg.support.viewsync.EarthViewSyncState;
 
-import interactivespaces.InteractiveSpacesException;
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
+import interactivespaces.activity.binary.NativeActivityRunnerFactory;
+import interactivespaces.activity.binary.NativeApplicationRunner;
 import interactivespaces.activity.component.binary.BasicNativeActivityComponent;
 import interactivespaces.service.comm.network.client.UdpBroadcastClientNetworkCommunicationEndpoint;
 import interactivespaces.service.comm.network.client.UdpBroadcastClientNetworkCommunicationEndpointListener;
@@ -34,6 +35,8 @@ import interactivespaces.util.process.restart.RestartStrategy;
 import interactivespaces.util.process.restart.LimitedRetryRestartStrategy;
 import interactivespaces.util.io.FileSupport;
 import interactivespaces.util.io.FileSupportImpl;
+
+import com.google.common.collect.Maps;
 
 import java.io.File;
 import java.util.Map;
@@ -91,6 +94,11 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
   private static final String CONFIG_VIEWSYNC_PORT = "lg.earth.viewSync.port";
 
   /**
+   * Configuration key for viewsync listener port
+   */
+  private static final String CONFIG_VIEWSYNC_LISTENER_PORT = "lg.earth.viewSync.listenerPort";
+
+  /**
    * Configuration key for SpaceNav device
    */
   private static final String CONFIG_SPACENAV_DEVICE = "lg.earth.spaceNavigator.device";
@@ -99,6 +107,11 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
    * Configuration key for SpaceNav flags
    */
   private static final String CONFIG_SPACENAV_FLAGS = "lg.earth.spaceNavigator.flags";
+
+  /**
+   * Path to the socat binary.
+   */
+  private static final String SOCAT_BIN = "/usr/bin/socat";
 
   /**
    * Templater for the activity.
@@ -206,39 +219,49 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
     addActivityComponent(earthComponent);
 
     if (getConfiguration().getRequiredPropertyBoolean(CONFIG_VIEWSYNC_SEND) == true) {
-      try {
-        Integer viewSyncPort =
-            Integer.parseInt(getConfiguration().getPropertyString(CONFIG_VIEWSYNC_PORT));
+      int viewSyncPort = getConfiguration().getRequiredPropertyInteger(CONFIG_VIEWSYNC_PORT);
 
-        UdpClientNetworkCommunicationEndpointService udpCommService =
-            getSpaceEnvironment().getServiceRegistry().getService(
-                UdpClientNetworkCommunicationEndpointService.NAME);
+      int viewSyncListenerPort =
+          getConfiguration().getRequiredPropertyInteger(CONFIG_VIEWSYNC_LISTENER_PORT);
 
-        UdpBroadcastClientNetworkCommunicationEndpoint udpBcastClient =
-            udpCommService.newBroadcastClient(viewSyncPort, getLog());
+      UdpClientNetworkCommunicationEndpointService udpCommService =
+          getSpaceEnvironment().getServiceRegistry().getService(
+              UdpClientNetworkCommunicationEndpointService.NAME);
 
-        // TODO: refactor Listener code into separate source file
-        udpBcastClient.addListener(new UdpBroadcastClientNetworkCommunicationEndpointListener() {
-          public void onUdpMessage(UdpBroadcastClientNetworkCommunicationEndpoint endpoint,
-              byte[] message, InetSocketAddress remoteAddress) {
-            String viewSyncData = new String(message);
-            getLog().debug(String.format("%s %s", "send viewsync message:", viewSyncData));
-            EarthViewSyncState state = new EarthViewSyncState(viewSyncData);
-            sendOutputJsonBuilder("viewsync_output", state.getJsonBuilder());
-          }
-        });
-        addManagedResource(udpBcastClient);
-        getLog().info("Added UDP ViewSync listener");
-      } catch (InteractiveSpacesException e) {
-        getLog().error("Could not set up UDP ViewSync listener");
-      }
+      UdpBroadcastClientNetworkCommunicationEndpoint udpBcastClient =
+          udpCommService.newBroadcastClient(viewSyncListenerPort, getLog());
+
+      // TODO: refactor Listener code into separate source file
+      udpBcastClient.addListener(new UdpBroadcastClientNetworkCommunicationEndpointListener() {
+        public void onUdpMessage(UdpBroadcastClientNetworkCommunicationEndpoint endpoint,
+            byte[] message, InetSocketAddress remoteAddress) {
+          String viewSyncData = new String(message);
+          getLog().debug(String.format("%s %s", "send viewsync message:", viewSyncData));
+          EarthViewSyncState state = new EarthViewSyncState(viewSyncData);
+          sendOutputJsonBuilder("viewsync_output", state.getJsonBuilder());
+        }
+      });
+
+      addManagedResource(udpBcastClient);
+      getLog().info("Added UDP ViewSync listener");
+
+      NativeActivityRunnerFactory runnerFactory = getController().getNativeActivityRunnerFactory();
+      NativeApplicationRunner socatRunner = runnerFactory.newPlatformNativeActivityRunner(getLog());
+
+      Map<String, Object> socatConfig = Maps.newHashMap();
+
+      String socatFlags =
+          String.format("UDP4-RECV:%d,reuseaddr UDP4-DATAGRAM:127.0.0.1:%d", viewSyncPort,
+              viewSyncListenerPort);
+
+      socatConfig.put(NativeApplicationRunner.ACTIVITYNAME, SOCAT_BIN);
+      socatConfig.put(NativeApplicationRunner.FLAGS, socatFlags);
+
+      socatRunner.configure(socatConfig);
+      addManagedResource(socatRunner);
     }
   }
 
-  /**
-   * Activity Startup Initializes UDP TODO: move pieces into Setup() when 1.5.4
-   * is released
-   */
   @Override
   public void onActivityStartup() {
     writeEarthConfigs();
