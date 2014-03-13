@@ -7,7 +7,7 @@ SELF="$( basename $0 )"
 
 # getopt to parse command-line, options documented in HELP_TEXT
 TMP_OPT=`getopt -s bash -o 'h' \
-        -l 'help,home-dir:,earth-dir:,earth-ver:' \
+        -l 'help,home-dir:,earth-dir:,earth-ver:,browser:' \
         -n 'google-earth-exec' -- "$@"`
 if [ $? != 0 ] ; then error_msg "Terminating..." >&2 ; exit 1 ; fi
 
@@ -38,6 +38,7 @@ ${SELF}: wraps the launch of the Google Earth binary to allow us to select versi
 while true ; do
     case "$1" in
         -h|--help)    echo "${HELP_TEXT}"; shift; exit 0;; 
+        --browser)    CMD_BROWSER="$2";    shift 2;;
         --earth-dir)  CMD_EARTH_DIR="$2";  shift 2;; 
         --earth-ver)  CMD_EARTH_VER="$2";  shift 2;; 
         --home-dir)   CMD_HOME_DIR="$2";   shift 2;; 
@@ -47,6 +48,11 @@ while true ; do
 done
 
 #if [ -n "${@}" ]; then echo "Remaining arguments: \"$@\""; fi
+
+if [ -O "${CMD_BROWSER}" ]; then
+    chmod +x "${CMD_BROWSER}"
+    BROWSER="${CMD_BROWSER}"
+fi
 
 EARTH_ALL=""
 PREFERRED_BIN=""
@@ -74,7 +80,7 @@ _googleearth_bin_exec() {
     # ALWAYS shift the first positional argument away
     shift
     cd "${_fullbindir}"
-    HOME="${CMD_HOME_DIR:-${HOME}}" LD_LIBRARY_PATH=".:${LD_LIBRARY_PATH}" exec ./googleearth-bin $@
+    HOME="${CMD_HOME_DIR:-${HOME}}" BROWSER="${BROWSER:-}" LD_LIBRARY_PATH=".:${LD_LIBRARY_PATH}" exec ./googleearth-bin $@
 }
 
 _discover_bin_versions "${CMD_EARTH_DIR:-/opt/google/earth}"
