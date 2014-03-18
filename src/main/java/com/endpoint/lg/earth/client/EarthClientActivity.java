@@ -19,15 +19,9 @@ package com.endpoint.lg.earth.client;
 import com.endpoint.lg.support.window.WindowIdentity;
 import com.endpoint.lg.support.window.WindowInstanceIdentity;
 import com.endpoint.lg.support.window.ManagedWindow;
-import com.endpoint.lg.support.viewsync.EarthViewSyncState;
 
-import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
-import interactivespaces.activity.binary.NativeActivityRunnerFactory;
-import interactivespaces.activity.binary.NativeApplicationRunner;
+import interactivespaces.activity.impl.BaseActivity;
 import interactivespaces.activity.component.binary.BasicNativeActivityComponent;
-import interactivespaces.service.comm.network.client.UdpBroadcastClientNetworkCommunicationEndpoint;
-import interactivespaces.service.comm.network.client.UdpBroadcastClientNetworkCommunicationEndpointListener;
-import interactivespaces.service.comm.network.client.UdpClientNetworkCommunicationEndpointService;
 import interactivespaces.service.template.Templater;
 import interactivespaces.service.template.TemplaterService;
 import interactivespaces.util.data.json.JsonBuilder;
@@ -36,12 +30,8 @@ import interactivespaces.util.process.restart.LimitedRetryRestartStrategy;
 import interactivespaces.util.io.FileSupport;
 import interactivespaces.util.io.FileSupportImpl;
 
-import com.google.common.collect.Maps;
-
 import java.io.File;
 import java.util.Map;
-
-import java.net.InetSocketAddress;
 
 /**
  * An Interactive Spaces activity which starts and stops a Google Earth
@@ -55,7 +45,7 @@ import java.net.InetSocketAddress;
  * @author Kiel Christofferson <kiel@endpoint.com>
  * @author Wojciech Ziniewicz <wojtek@endpoint.com>
  */
-public class EarthClientActivity extends BaseRoutableRosActivity {
+public class EarthClientActivity extends BaseActivity {
 
   /**
    * The folder in the activity which stores the configuration templates.
@@ -84,21 +74,6 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
   private static final String CONFIG_GUI_HIDDEN = "lg.earth.gui.hidden";
 
   /**
-   * Configuration key for viewsync "send"
-   */
-  private static final String CONFIG_VIEWSYNC_SEND = "lg.earth.viewSync.send";
-
-  /**
-   * Configuration key for viewsync "port"
-   */
-  private static final String CONFIG_VIEWSYNC_PORT = "lg.earth.viewSync.port";
-
-  /**
-   * Configuration key for viewsync listener port
-   */
-  private static final String CONFIG_VIEWSYNC_LISTENER_PORT = "lg.earth.viewSync.listenerPort";
-
-  /**
    * Configuration key for SpaceNav device
    */
   private static final String CONFIG_SPACENAV_DEVICE = "lg.earth.spaceNavigator.device";
@@ -107,11 +82,6 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
    * Configuration key for SpaceNav flags
    */
   private static final String CONFIG_SPACENAV_FLAGS = "lg.earth.spaceNavigator.flags";
-
-  /**
-   * Path to the socat binary.
-   */
-  private static final String SOCAT_BIN = "/usr/bin/socat";
 
   /**
    * Templater for the activity.
@@ -218,48 +188,6 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
     earthRestartStrategy.addRestartStrategyListener(earthRestartListener);
     addActivityComponent(earthComponent);
 
-    if (getConfiguration().getRequiredPropertyBoolean(CONFIG_VIEWSYNC_SEND) == true) {
-      int viewSyncPort = getConfiguration().getRequiredPropertyInteger(CONFIG_VIEWSYNC_PORT);
-
-      int viewSyncListenerPort =
-          getConfiguration().getRequiredPropertyInteger(CONFIG_VIEWSYNC_LISTENER_PORT);
-
-      UdpClientNetworkCommunicationEndpointService udpCommService =
-          getSpaceEnvironment().getServiceRegistry().getService(
-              UdpClientNetworkCommunicationEndpointService.NAME);
-
-      UdpBroadcastClientNetworkCommunicationEndpoint udpBcastClient =
-          udpCommService.newBroadcastClient(viewSyncListenerPort, getLog());
-
-      // TODO: refactor Listener code into separate source file
-      udpBcastClient.addListener(new UdpBroadcastClientNetworkCommunicationEndpointListener() {
-        public void onUdpMessage(UdpBroadcastClientNetworkCommunicationEndpoint endpoint,
-            byte[] message, InetSocketAddress remoteAddress) {
-          String viewSyncData = new String(message);
-          getLog().debug(String.format("%s %s", "send viewsync message:", viewSyncData));
-          EarthViewSyncState state = new EarthViewSyncState(viewSyncData);
-          sendOutputJsonBuilder("viewsync_output", state.getJsonBuilder());
-        }
-      });
-
-      addManagedResource(udpBcastClient);
-      getLog().info("Added UDP ViewSync listener");
-
-      NativeActivityRunnerFactory runnerFactory = getController().getNativeActivityRunnerFactory();
-      NativeApplicationRunner socatRunner = runnerFactory.newPlatformNativeActivityRunner(getLog());
-
-      Map<String, Object> socatConfig = Maps.newHashMap();
-
-      String socatFlags =
-          String.format("UDP4-RECV:%d,reuseaddr UDP4-DATAGRAM:127.0.0.1:%d", viewSyncPort,
-              viewSyncListenerPort);
-
-      socatConfig.put(NativeApplicationRunner.ACTIVITYNAME, SOCAT_BIN);
-      socatConfig.put(NativeApplicationRunner.FLAGS, socatFlags);
-
-      socatRunner.configure(socatConfig);
-      addManagedResource(socatRunner);
-    }
   }
 
   @Override
@@ -310,7 +238,6 @@ public class EarthClientActivity extends BaseRoutableRosActivity {
         new File(String.format("%s/%s", earthDotDirectory, "myplaces.kml")));
     templater.writeTemplate("cached_default_view.kml.ftl", builder.build(),
         new File(String.format("%s/%s", earthDotDirectory, "cached_default_view.kml")));
-
   }
 
   @Override
