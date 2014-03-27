@@ -18,28 +18,18 @@ package com.endpoint.lg.earth.client;
 
 import com.endpoint.lg.support.window.ManagedWindow;
 
-import interactivespaces.InteractiveSpacesException;
-import interactivespaces.configuration.Configuration;
 import interactivespaces.util.process.restart.Restartable;
 import interactivespaces.util.process.restart.RestartStrategy;
 import interactivespaces.util.process.restart.RestartStrategyListener;
 
-import com.google.common.collect.Lists;
-
 import org.apache.commons.logging.Log;
 
-import java.io.File;
-import interactivespaces.util.io.FileSupport;
-import interactivespaces.util.io.FileSupportImpl;
-
-import java.util.Map;
-
 /**
- * RestartStrategy Listener implementation for Google Earth NativeRunner. 
- *
+ * RestartStrategy Listener implementation for Google Earth NativeRunner.
+ * 
  * Every time Earth starts, we want the underlying configuration/cache to be in
  * a known state.
- *
+ * 
  * @author Kiel Christofferson <kiel@endpoint.com>
  */
 public class EarthClientRestartListener implements RestartStrategyListener {
@@ -49,29 +39,14 @@ public class EarthClientRestartListener implements RestartStrategyListener {
   private final ManagedWindow window;
 
   /**
-   * Configuration from the activity
+   * Configuration template writer from the activity
    */
-  private final Configuration config;
+  private final EarthClientConfigWriter configWriter;
 
   /**
    * Log for the listener
    */
   private final Log log;
-
-  /**
-   * TempDirq for Earth
-   */
-  private File earthTempDirectory;
-
-  /**
-   * CacheDir for Earth
-   */
-  private File earthCacheDirectory;
-
-  /**
-   * The file support to use for file operations
-   */
-  private final FileSupport fileSupport = FileSupportImpl.INSTANCE;
 
   /**
    * Restart vote boolean
@@ -80,36 +55,28 @@ public class EarthClientRestartListener implements RestartStrategyListener {
 
   /**
    * Construct the listener
-   *
+   * 
    * @param window
-   * @param config
+   * @param configWriter
    * @param log
    */
-  public EarthClientRestartListener(ManagedWindow window, Configuration config, Log log) {
+  public EarthClientRestartListener(ManagedWindow window, EarthClientConfigWriter configWriter,
+      Log log) {
     this.window = window;
-    this.config = config;
+    this.configWriter = configWriter;
     this.log = log;
   }
 
   /**
-   * Restart attempt callback
-   *   purge cache directories
-   *   and re-manage the window
+   * Restart attempt callback purge cache directories and re-manage the window
    */
   @Override
-  public boolean onRestartAttempt(RestartStrategy strategy, Restartable restartable, boolean restartVote) {
+  public boolean onRestartAttempt(RestartStrategy strategy, Restartable restartable,
+      boolean restartVote) {
     log.info("Earth RestartStrategy Attempt");
-    Map<String, String> env = System.getenv();
 
-    // these need to come from the config
-    earthTempDirectory = new File(
-        String.format( "%s/%s", env.get("HOME"), ".googleearth/Temp") );
-    earthCacheDirectory = new File(
-        String.format( "%s/%s", env.get("HOME"), ".googleearth/Cache") );
-    fileSupport.directoryExists(earthTempDirectory, "GE Temp directory failure");
-    fileSupport.deleteDirectoryContents(earthTempDirectory);
-    fileSupport.directoryExists(earthCacheDirectory, "GE Cache directory failure");
-    fileSupport.deleteDirectoryContents(earthCacheDirectory);
+    // re-write the configuration templates
+    configWriter.write();
 
     // position the new window via the ManagedWindow resource
     window.startup();

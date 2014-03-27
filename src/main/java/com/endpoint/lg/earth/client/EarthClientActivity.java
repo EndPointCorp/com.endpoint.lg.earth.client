@@ -24,14 +24,10 @@ import interactivespaces.activity.impl.BaseActivity;
 import interactivespaces.activity.component.binary.BasicNativeActivityComponent;
 import interactivespaces.service.template.Templater;
 import interactivespaces.service.template.TemplaterService;
-import interactivespaces.util.data.json.JsonBuilder;
 import interactivespaces.util.process.restart.RestartStrategy;
 import interactivespaces.util.process.restart.LimitedRetryRestartStrategy;
-import interactivespaces.util.io.FileSupport;
-import interactivespaces.util.io.FileSupportImpl;
 
 import java.io.File;
-import java.util.Map;
 
 /**
  * An Interactive Spaces activity which starts and stops a Google Earth
@@ -114,19 +110,9 @@ public class EarthClientActivity extends BaseActivity {
   private ManagedWindow window;
 
   /**
-   * Config directory for Earth
+   * Configuration template writer.
    */
-  private File earthConfigDirectory;
-
-  /**
-   * Dot directory for Earth
-   */
-  private File earthDotDirectory;
-
-  /**
-   * file support to use for file operations
-   */
-  private final FileSupport fileSupport = FileSupportImpl.INSTANCE;
+  private EarthClientConfigWriter configWriter;
 
   /**
    * Sets up the configuration templates and adds a basic
@@ -135,7 +121,7 @@ public class EarthClientActivity extends BaseActivity {
    */
   @Override
   public void onActivitySetup() {
-
+    // set up the config templater
     TemplaterService service =
         getSpaceEnvironment().getServiceRegistry()
             .getRequiredService(TemplaterService.SERVICE_NAME);
@@ -147,11 +133,13 @@ public class EarthClientActivity extends BaseActivity {
 
     addManagedResource(templater);
 
+    // set up window management
     windowId = new WindowInstanceIdentity(getUuid());
     window = new ManagedWindow(this, windowId);
 
     addManagedResource(window);
 
+    // start building Earth command line arguments
     String extraEarthFlags = "";
 
     // only set SpaceNav flags if configured
@@ -181,63 +169,25 @@ public class EarthClientActivity extends BaseActivity {
             getConfiguration().getRequiredPropertyString(CONFIG_ACTIVITY_EXECUTABLE_FLAGS),
             extraEarthFlags));
 
+    // set up the configuration template writer
+    File installDir = getActivityFilesystem().getInstallDirectory();
+    EarthClientConfiguration config = new EarthClientConfiguration(getConfiguration(), installDir);
+
+    configWriter = new EarthClientConfigWriter(config, templater);
+
+    // set up the native component
     earthComponent = new BasicNativeActivityComponent();
-    earthRestartListener = new EarthClientRestartListener(window, getConfiguration(), getLog());
+    earthRestartListener = new EarthClientRestartListener(window, configWriter, getLog());
     earthRestartStrategy = new LimitedRetryRestartStrategy(4, 1000, 4000, getSpaceEnvironment());
 
     earthRestartStrategy.addRestartStrategyListener(earthRestartListener);
     addActivityComponent(earthComponent);
-
   }
 
   @Override
   public void onActivityStartup() {
-    writeEarthConfigs();
+    configWriter.write();
     earthComponent.getNativeActivityRunner().setRestartStrategy(earthRestartStrategy);
-  }
-
-  /**
-   * Handles configuration changes.
-   * 
-   * @param update
-   *          configuration updates
-   */
-  @Override
-  public void onActivityConfigurationUpdate(Map<String, Object> update) {
-    writeEarthConfigs();
-  }
-
-  /**
-   * Writes out the Earth Configs.
-   */
-  private void writeEarthConfigs() {
-
-    earthConfigDirectory =
-        new File(String.format("%s/%s", getActivityFilesystem().getInstallDirectory(),
-            "earth/.config/Google"));
-    earthDotDirectory =
-        new File(String.format("%s/%s", getActivityFilesystem().getInstallDirectory(),
-            "earth/.googleearth"));
-
-    EarthClientConfiguration earthConfig =
-        new EarthClientConfiguration(getConfiguration(), earthDotDirectory);
-
-    JsonBuilder builder = new JsonBuilder();
-    builder.put("ge", earthConfig);
-
-    getLog().info(builder.toString());
-
-    fileSupport.directoryExists(earthConfigDirectory, "GE Config directory failure");
-    fileSupport.directoryExists(earthDotDirectory, "GE .googleearth directory failure");
-
-    templater.writeTemplate("GoogleEarthPlus.conf.ftl", builder.build(),
-        new File(String.format("%s/%s", earthConfigDirectory, "GoogleEarthPlus.conf")));
-    templater.writeTemplate("GECommonSettings.conf.ftl", builder.build(),
-        new File(String.format("%s/%s", earthConfigDirectory, "GECommonSettings.conf")));
-    templater.writeTemplate("myplaces.kml.ftl", builder.build(),
-        new File(String.format("%s/%s", earthDotDirectory, "myplaces.kml")));
-    templater.writeTemplate("cached_default_view.kml.ftl", builder.build(),
-        new File(String.format("%s/%s", earthDotDirectory, "cached_default_view.kml")));
   }
 
   @Override
