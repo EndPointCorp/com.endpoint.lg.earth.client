@@ -193,10 +193,10 @@ public class EarthClientActivity extends BaseActivity {
 
     // set up the native component
     earthComponent = new BasicNativeActivityComponent();
-    earthRestartListener = new EarthClientRestartListener(window, configWriter, getLog());
+    earthRestartListener = new EarthClientRestartListener(configWriter, getLog());
 
     int restartAttempts = getConfiguration().getRequiredPropertyInteger(CONFIG_RESTART_ATTEMPTS);
-    int restartDelay = getConfiguration().getRequiredPropertyInteger(CONFIG_RESTART_DELAY);
+    long restartDelay = getConfiguration().getRequiredPropertyLong(CONFIG_RESTART_DELAY);
 
     earthRestartStrategy =
         new LimitedRetryRestartStrategy(restartAttempts, restartDelay, RESTART_SUCCESS_TIME,

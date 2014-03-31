@@ -16,8 +16,6 @@
 
 package com.endpoint.lg.earth.client;
 
-import com.endpoint.lg.support.window.ManagedWindow;
-
 import interactivespaces.util.process.restart.Restartable;
 import interactivespaces.util.process.restart.RestartStrategy;
 import interactivespaces.util.process.restart.RestartStrategyListener;
@@ -33,11 +31,6 @@ import org.apache.commons.logging.Log;
  * @author Kiel Christofferson <kiel@endpoint.com>
  */
 public class EarthClientRestartListener implements RestartStrategyListener {
-  /**
-   * ManagedWindow object from the activity
-   */
-  private final ManagedWindow window;
-
   /**
    * Configuration template writer from the activity
    */
@@ -60,9 +53,7 @@ public class EarthClientRestartListener implements RestartStrategyListener {
    * @param configWriter
    * @param log
    */
-  public EarthClientRestartListener(ManagedWindow window, EarthClientConfigWriter configWriter,
-      Log log) {
-    this.window = window;
+  public EarthClientRestartListener(EarthClientConfigWriter configWriter, Log log) {
     this.configWriter = configWriter;
     this.log = log;
   }
@@ -77,9 +68,6 @@ public class EarthClientRestartListener implements RestartStrategyListener {
 
     // re-write the configuration templates
     configWriter.write();
-
-    // position the new window via the ManagedWindow resource
-    window.startup();
 
     // would we ever vote AGAINST restarting Earth?
     returnVote = true;
