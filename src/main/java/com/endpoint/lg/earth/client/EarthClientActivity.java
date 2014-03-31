@@ -90,6 +90,12 @@ public class EarthClientActivity extends BaseActivity {
   private static final String CONFIG_RESTART_DELAY = "lg.earth.restart.delay";
 
   /**
+   * Number of milliseconds Earth must be running for a restart to be considered
+   * a success.
+   */
+  private static final long RESTART_SUCCESS_TIME = 10000;
+
+  /**
    * Templater for the activity.
    */
   private Templater templater;
@@ -193,7 +199,8 @@ public class EarthClientActivity extends BaseActivity {
     int restartDelay = getConfiguration().getRequiredPropertyInteger(CONFIG_RESTART_DELAY);
 
     earthRestartStrategy =
-        new LimitedRetryRestartStrategy(restartAttempts, restartDelay, 4000, getSpaceEnvironment());
+        new LimitedRetryRestartStrategy(restartAttempts, restartDelay, RESTART_SUCCESS_TIME,
+            getSpaceEnvironment());
 
     earthRestartStrategy.addRestartStrategyListener(earthRestartListener);
     addActivityComponent(earthComponent);
