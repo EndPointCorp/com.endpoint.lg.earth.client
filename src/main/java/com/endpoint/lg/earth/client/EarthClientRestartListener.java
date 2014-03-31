@@ -42,11 +42,6 @@ public class EarthClientRestartListener implements RestartStrategyListener {
   private final Log log;
 
   /**
-   * Restart vote boolean
-   */
-  private boolean returnVote;
-
-  /**
    * Construct the listener
    * 
    * @param window
@@ -70,8 +65,7 @@ public class EarthClientRestartListener implements RestartStrategyListener {
     configWriter.write();
 
     // would we ever vote AGAINST restarting Earth?
-    returnVote = true;
-    return returnVote;
+    return true;
   }
 
   /**
