@@ -22,6 +22,10 @@ ${SELF}: wraps the launch of the Google Earth binary to allow us to select versi
         [-h|--help]
             help message
 
+        [--browser <browser>]
+            Export the BROWSER environment variable before exec.
+            Earth will use this app as its external browser.
+
         [--home-dir <home-dir>]
             export the HOME environment variable before exec
 
