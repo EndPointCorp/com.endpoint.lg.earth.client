@@ -80,6 +80,16 @@ public class EarthClientActivity extends BaseActivity {
   private static final String CONFIG_SPACENAV_FLAGS = "lg.earth.spaceNavigator.flags";
 
   /**
+   * Configuration key for number of restart attempts.
+   */
+  private static final String CONFIG_RESTART_ATTEMPTS = "lg.earth.restart.attempts";
+
+  /**
+   * Configuration key for delay between restart attempts.
+   */
+  private static final String CONFIG_RESTART_DELAY = "lg.earth.restart.delay";
+
+  /**
    * Templater for the activity.
    */
   private Templater templater;
@@ -178,7 +188,12 @@ public class EarthClientActivity extends BaseActivity {
     // set up the native component
     earthComponent = new BasicNativeActivityComponent();
     earthRestartListener = new EarthClientRestartListener(window, configWriter, getLog());
-    earthRestartStrategy = new LimitedRetryRestartStrategy(4, 1000, 4000, getSpaceEnvironment());
+
+    int restartAttempts = getConfiguration().getRequiredPropertyInteger(CONFIG_RESTART_ATTEMPTS);
+    int restartDelay = getConfiguration().getRequiredPropertyInteger(CONFIG_RESTART_DELAY);
+
+    earthRestartStrategy =
+        new LimitedRetryRestartStrategy(restartAttempts, restartDelay, 4000, getSpaceEnvironment());
 
     earthRestartStrategy.addRestartStrategyListener(earthRestartListener);
     addActivityComponent(earthComponent);
