@@ -1,0 +1,50 @@
+CONFIGURATION VARIABLES FOR LG-CMS ACTIVITIES
+
+earth.client
+    space.activity.component.native.executable.flags.linux      Extra earth flags
+    lg.window.viewport.target
+    lg.earth.window.viewport_name           Viewport name for earth scene messages
+    lg.earth.window.x_coord                 Coordinates for earth scene messages
+    lg.earth.window.y_coord
+    lg.earth.window.name                    window slug value, if viewport_name and ?_coord aren't defined
+    lg.window.viewport.target               window slug value, if lg.earth.window.name isn't set (srsly? Three levels of overriding?)
+    lg.earth.gui.hidden                     Should the GUI be hidden (true / false)
+    lg.earth.spaceNavigator.device          Does a spacenav exist
+    lg.earth.spaceNavigator.flags           Earth flags to handle spacenav device
+    lg.earth.restart.attempts               How many times to restart the earth client if it crashes          
+    lg.earth.restart.delay                  How long to wait before restarting earth, if it crashes
+        # Settings for various Earth behaviors
+    lg.earth.gui.compassNavigation
+    lg.earth.gui.movementVisualization
+    lg.earth.gui.showStatusBar
+    lg.earth.gui.flytoSpeed
+    lg.earth.gui.use3dController
+    lg.earth.render.anisotropicFiltering
+    lg.earth.render.highQualityTerrain
+    lg.earth.render.iconSize
+    lg.earth.render.use3dImagery
+    lg.earth.render.textureCompression
+    lg.earth.cache.diskSize
+    lg.earth.cache.memorySize
+    lg.earth.cache.location
+    lg.earth.launcher.location
+    lg.earth.kml.syncBase
+    lg.earth.kml.defaultView
+    lg.earth.kml.defaultViewLat
+    lg.earth.kml.defaultViewLon
+    lg.earth.kml.location
+    lg.earth.layers.earth.borders.coastLines
+    lg.earth.layers.earth.borders.international
+    lg.earth.layers.earth.borders.statesAndProvinces
+    lg.earth.layers.earth.borders.waterBodies
+    lg.earth.layers.earth.buildings.gray
+    lg.earth.layers.earth.buildings.photoRealistic
+    lg.earth.layers.earth.buildings.trees
+    lg.earth.layers.earth.labels.countries
+    lg.earth.layers.earth.labels.islands
+    lg.earth.layers.earth.labels.localPlaceNames
+    lg.earth.layers.earth.labels.populatedPlaces
+    lg.earth.layers.earth.labels.regionsAndCounties
+    lg.earth.layers.earth.labels.statesAndProvinces
+    lg.earth.layers.earth.labels.waterBodies
+    lg.earth.layers.earth.roads
