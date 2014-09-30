@@ -177,7 +177,7 @@ public class EarthClientActivity extends BaseActivity {
     addManagedResource(window);
 
     // start building Earth command line arguments
-    String extraEarthFlags = "";
+    String extraEarthFlags = " -- ";
 
     // only set SpaceNav flags if configured
     if (!getConfiguration().getRequiredPropertyString(CONFIG_SPACENAV_DEVICE).equals("")) {
