@@ -16,7 +16,7 @@
 
 package com.endpoint.lg.earth.client;
 
-import com.endpoint.lg.support.window.WindowIdentity;
+import com.endpoint.lg.support.window.WindowNameIdentity;
 import com.endpoint.lg.support.window.WindowInstanceIdentity;
 import com.endpoint.lg.support.window.ManagedWindow;
 import com.endpoint.lg.support.message.Window;
@@ -139,7 +139,7 @@ public class EarthClientActivity extends BaseActivity {
   /**
    * WindowIdentity for the Earth Client window
    */
-  private WindowIdentity windowId;
+  private WindowNameIdentity windowId;
 
   /**
    * ManagedWindow for the Earth Client window
@@ -171,7 +171,7 @@ public class EarthClientActivity extends BaseActivity {
     addManagedResource(templater);
 
     // set up window management
-    windowId = new WindowInstanceIdentity(getUuid());
+    windowId = new WindowNameIdentity(getUuid());
     window = new ManagedWindow(this, windowId);
 
     addManagedResource(window);
@@ -194,7 +194,7 @@ public class EarthClientActivity extends BaseActivity {
       w.presentation_viewport = getConfiguration().getRequiredPropertyString(CONFIG_WINDOW_VIEWPORT_NAME);
       w.x_coord = getConfiguration().getRequiredPropertyInteger(CONFIG_WINDOW_XCOORD);
       w.y_coord = getConfiguration().getRequiredPropertyInteger(CONFIG_WINDOW_YCOORD);
-      extraEarthFlags += String.format(" -name \"%s\"", w.getWindowSlug());
+      extraEarthFlags += String.format(" -name \"%s\"", getUuid());
     } catch (InteractiveSpacesException e) {
       if (getConfiguration().getPropertyString(CONFIG_WINDOW_NAME) != null
           && !getConfiguration().getPropertyString(CONFIG_WINDOW_NAME).isEmpty()) {
