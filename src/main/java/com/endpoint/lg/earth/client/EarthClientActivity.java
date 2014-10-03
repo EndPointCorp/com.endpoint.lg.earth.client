@@ -171,7 +171,7 @@ public class EarthClientActivity extends BaseActivity {
     addManagedResource(templater);
 
     // set up window management
-    windowId = new WindowNameIdentity(getUuid());
+    windowId = new WindowNameIdentity(getUuid().replace("-", ""));
     window = new ManagedWindow(this, windowId);
 
     addManagedResource(window);
@@ -194,7 +194,7 @@ public class EarthClientActivity extends BaseActivity {
       w.presentation_viewport = getConfiguration().getRequiredPropertyString(CONFIG_WINDOW_VIEWPORT_NAME);
       w.x_coord = getConfiguration().getRequiredPropertyInteger(CONFIG_WINDOW_XCOORD);
       w.y_coord = getConfiguration().getRequiredPropertyInteger(CONFIG_WINDOW_YCOORD);
-      extraEarthFlags += String.format(" -name \"%s\"", getUuid());
+      extraEarthFlags += String.format(" -name \"%s\"", getUuid().replace("-", ""));
     } catch (InteractiveSpacesException e) {
       if (getConfiguration().getPropertyString(CONFIG_WINDOW_NAME) != null
           && !getConfiguration().getPropertyString(CONFIG_WINDOW_NAME).isEmpty()) {
