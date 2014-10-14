@@ -2,8 +2,7 @@ CONFIGURATION VARIABLES FOR LG-CMS ACTIVITIES
 
 earth.client
     space.activity.component.native.executable.flags.linux      Extra earth flags
-    lg.window.viewport.target
-    lg.earth.window.viewport_name           Viewport name for earth scene messages
+    lg.window.viewport.target               Viewport name for earth scene messages
     lg.earth.window.x_coord                 Coordinates for earth scene messages
     lg.earth.window.y_coord
     lg.earth.window.name                    window slug value, if viewport_name and ?_coord aren't defined

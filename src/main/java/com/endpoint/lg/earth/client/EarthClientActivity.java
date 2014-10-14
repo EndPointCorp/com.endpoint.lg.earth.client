@@ -62,11 +62,6 @@ public class EarthClientActivity extends BaseActivity {
   private static final String CONFIG_VIEWPORT_TARGET = "lg.window.viewport.target";
 
   /**
-   * Configuration key to override window viewport name
-   */
-  private static final String CONFIG_WINDOW_VIEWPORT_NAME = "lg.earth.window.viewport_name";
-
-  /**
    * Configuration key to override window X coordinate
    */
   private static final String CONFIG_WINDOW_XCOORD = "lg.earth.window.x_coord";
@@ -191,7 +186,7 @@ public class EarthClientActivity extends BaseActivity {
       // catch the exception when they're missing.
       getLog().debug("Getting window name from xcoord, ycoord, and viewport_name configuration values");
       Window w = new Window();
-      w.presentation_viewport = getConfiguration().getRequiredPropertyString(CONFIG_WINDOW_VIEWPORT_NAME);
+      w.presentation_viewport = getConfiguration().getRequiredPropertyString(CONFIG_VIEWPORT_TARGET);
       w.x_coord = getConfiguration().getRequiredPropertyInteger(CONFIG_WINDOW_XCOORD);
       w.y_coord = getConfiguration().getRequiredPropertyInteger(CONFIG_WINDOW_YCOORD);
       extraEarthFlags += String.format(" -name \"%s\"", getUuid().replace("-", ""));
