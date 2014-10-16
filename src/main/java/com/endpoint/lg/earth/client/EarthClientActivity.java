@@ -17,7 +17,7 @@
 package com.endpoint.lg.earth.client;
 
 import com.endpoint.lg.support.window.WindowIdentity;
-import com.endpoint.lg.support.window.WindowInstanceIdentity;
+import com.endpoint.lg.support.window.WindowNameIdentity;
 import com.endpoint.lg.support.window.ManagedWindow;
 
 import interactivespaces.activity.impl.BaseActivity;
@@ -150,18 +150,25 @@ public class EarthClientActivity extends BaseActivity {
     addManagedResource(templater);
 
     // set up window management
-    windowId = new WindowInstanceIdentity(getUuid());
+    windowId = new WindowNameIdentity(getUuid());
     window = new ManagedWindow(this, windowId);
 
     addManagedResource(window);
 
+    File installDir = getActivityFilesystem().getInstallDirectory();
+
     // start building Earth command line arguments
-    String extraEarthFlags = "";
+        // XXX this doesn't deal well with controllers installed in directories
+        // that would require quoting. Getting it fixed is taking far longer
+        // than it's worth, for now.
+    String extraEarthFlags = " --home-dir=" + installDir.getAbsolutePath() + "/earth/ ";
 
     // only set SpaceNav flags if configured
     if (!getConfiguration().getRequiredPropertyString(CONFIG_SPACENAV_DEVICE).equals("")) {
       extraEarthFlags += getConfiguration().getRequiredPropertyString(CONFIG_SPACENAV_FLAGS);
     }
+
+    extraEarthFlags += " -- ";
 
     // handle window name or viewport target values from activity config
     if (getConfiguration().getPropertyString(CONFIG_WINDOW_NAME) != null
@@ -186,7 +193,6 @@ public class EarthClientActivity extends BaseActivity {
             extraEarthFlags));
 
     // set up the configuration template writer
-    File installDir = getActivityFilesystem().getInstallDirectory();
     EarthClientConfiguration config = new EarthClientConfiguration(getConfiguration(), installDir);
 
     configWriter = new EarthClientConfigWriter(config, templater);
