@@ -98,6 +98,9 @@ _googleearth_bin_exec() {
     # ALWAYS shift the first positional argument away
     shift
     cd "${_fullbindir}"
+#    pwd > /tmp/running.log
+#    date >> /tmp/running.log
+#    echo "HOME=${CMD_HOME_DIR:-${HOME}} BROWSER=${BROWSER:-} LD_LIBRARY_PATH=.:${LD_LIBRARY_PATH} exec ./googleearth-bin $@" >> /tmp/running.log
     HOME="${CMD_HOME_DIR:-${HOME}}" BROWSER="${BROWSER:-}" LD_LIBRARY_PATH=".:${LD_LIBRARY_PATH}" exec ./googleearth-bin $@
 }
 
