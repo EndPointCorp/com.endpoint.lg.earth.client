@@ -17,7 +17,7 @@
 package com.endpoint.lg.earth.client;
 
 import com.endpoint.lg.support.window.WindowIdentity;
-import com.endpoint.lg.support.window.WindowNameIdentity;
+import com.endpoint.lg.support.window.WindowInstanceIdentity;
 import com.endpoint.lg.support.window.ManagedWindow;
 import com.endpoint.lg.support.message.Window;
 
@@ -145,7 +145,7 @@ public class EarthClientActivity extends BaseActivity {
   /**
    * WindowIdentity for the Earth Client window
    */
-  private WindowNameIdentity windowId;
+  private WindowInstanceIdentity windowId;
 
   /**
    * ManagedWindow for the Earth Client window
@@ -177,7 +177,7 @@ public class EarthClientActivity extends BaseActivity {
     addManagedResource(templater);
 
     // set up window management
-    windowId = new WindowNameIdentity(getUuid());
+    windowId = new WindowInstanceIdentity(getUuid().replace("-", ""));
     window = new ManagedWindow(this, windowId);
 
     addManagedResource(window);
