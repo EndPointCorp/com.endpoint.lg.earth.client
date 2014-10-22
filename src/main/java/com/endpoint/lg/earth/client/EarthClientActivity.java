@@ -21,13 +21,14 @@ import com.endpoint.lg.support.window.WindowNameIdentity;
 import com.endpoint.lg.support.window.ManagedWindow;
 import com.endpoint.lg.support.message.Window;
 
-import interactivespaces.InteractiveSpacesException;
-import interactivespaces.activity.impl.BaseActivity;
 import interactivespaces.activity.component.binary.BasicNativeActivityComponent;
+import interactivespaces.activity.impl.BaseActivity;
+import interactivespaces.InteractiveSpacesException;
 import interactivespaces.service.template.Templater;
 import interactivespaces.service.template.TemplaterService;
-import interactivespaces.util.process.restart.RestartStrategy;
+import interactivespaces.util.process.NativeApplicationRunner;
 import interactivespaces.util.process.restart.LimitedRetryRestartStrategy;
+import interactivespaces.util.process.restart.RestartStrategy;
 
 import java.io.File;
 
@@ -86,6 +87,16 @@ public class EarthClientActivity extends BaseActivity {
   private static final String CONFIG_GUI_HIDDEN = "lg.earth.gui.hidden";
 
   /**
+   * Configuration key for viewsync-related Earth flags
+   */
+  private static final String CONFIG_VIEWSYNC_FLAGS = "lg.earth.viewsync.flags";
+
+  /**
+   * Configuration key for Earth wrapper script flags
+   */
+  private static final String CONFIG_WRAPPER_FLAGS = "lg.earth.wrapper.flags";
+
+  /**
    * Configuration key for SpaceNav device
    */
   private static final String CONFIG_SPACENAV_DEVICE = "lg.earth.spaceNavigator.device";
@@ -124,12 +135,12 @@ public class EarthClientActivity extends BaseActivity {
   /**
    * Restart Strategy for our activity runner
    */
-  private RestartStrategy earthRestartStrategy;
+  private RestartStrategy<NativeApplicationRunner> earthRestartStrategy;
 
   /**
    * Restart Strategy Listener for our native activity
    */
-  private EarthClientRestartListener earthRestartListener;
+  private EarthClientRestartListener<NativeApplicationRunner> earthRestartListener;
 
   /**
    * WindowIdentity for the Earth Client window
@@ -179,12 +190,16 @@ public class EarthClientActivity extends BaseActivity {
         // than it's worth, for now.
     String extraEarthFlags = " --home-dir=" + installDir.getAbsolutePath() + "/earth/ ";
 
+    extraEarthFlags += getConfiguration().getPropertyString(CONFIG_WRAPPER_FLAGS, "");
+
+    extraEarthFlags += " -- ";
+
+    extraEarthFlags += getConfiguration().getPropertyString(CONFIG_VIEWSYNC_FLAGS, "");
+
     // only set SpaceNav flags if configured
     if (!getConfiguration().getRequiredPropertyString(CONFIG_SPACENAV_DEVICE).equals("")) {
       extraEarthFlags += getConfiguration().getRequiredPropertyString(CONFIG_SPACENAV_FLAGS);
     }
-
-    extraEarthFlags += " -- ";
 
     // handle window name or viewport target values from activity config
     try {
@@ -196,16 +211,16 @@ public class EarthClientActivity extends BaseActivity {
       w.presentation_viewport = getConfiguration().getRequiredPropertyString(CONFIG_VIEWPORT_TARGET);
       w.x_coord = getConfiguration().getRequiredPropertyInteger(CONFIG_WINDOW_XCOORD);
       w.y_coord = getConfiguration().getRequiredPropertyInteger(CONFIG_WINDOW_YCOORD);
-      extraEarthFlags += String.format(" -name \"%s\"", getUuid().replace("-", ""));
+      extraEarthFlags += String.format(" -name %s", getUuid().replace("-", ""));
     } catch (InteractiveSpacesException e) {
       if (getConfiguration().getPropertyString(CONFIG_WINDOW_NAME) != null
           && !getConfiguration().getPropertyString(CONFIG_WINDOW_NAME).isEmpty()) {
         extraEarthFlags +=
                 // This format string used to have "$s" instead of "%s". Should it really be that way?
-            String.format(" -name \"%s\"", getConfiguration().getPropertyString(CONFIG_WINDOW_NAME));
+            String.format(" -name %s", getConfiguration().getPropertyString(CONFIG_WINDOW_NAME));
       } else if (getConfiguration().getPropertyString(CONFIG_VIEWPORT_TARGET) != null
           && !getConfiguration().getPropertyString(CONFIG_VIEWPORT_TARGET).isEmpty()) {
-        extraEarthFlags += String.format(" -name \"%s\"", getUuid());
+        extraEarthFlags += String.format(" -name %s", getUuid());
       }
     }
 
@@ -218,8 +233,8 @@ public class EarthClientActivity extends BaseActivity {
     getConfiguration().setValue(
         CONFIG_ACTIVITY_EXECUTABLE_FLAGS,
         String.format("%s %s",
-            getConfiguration().getRequiredPropertyString(CONFIG_ACTIVITY_EXECUTABLE_FLAGS),
-            extraEarthFlags));
+            extraEarthFlags,
+            getConfiguration().getRequiredPropertyString(CONFIG_ACTIVITY_EXECUTABLE_FLAGS)));
 
     // set up the configuration template writer
     EarthClientConfiguration config = new EarthClientConfiguration(getConfiguration(), installDir);
@@ -228,14 +243,15 @@ public class EarthClientActivity extends BaseActivity {
 
     // set up the native component
     earthComponent = new BasicNativeActivityComponent();
-    earthRestartListener = new EarthClientRestartListener(configWriter, getLog());
+    earthRestartListener = new EarthClientRestartListener<NativeApplicationRunner>(configWriter, getLog());
 
     int restartAttempts = getConfiguration().getRequiredPropertyInteger(CONFIG_RESTART_ATTEMPTS);
     long restartDelay = getConfiguration().getRequiredPropertyLong(CONFIG_RESTART_DELAY);
 
     earthRestartStrategy =
-        new LimitedRetryRestartStrategy(restartAttempts, restartDelay, RESTART_SUCCESS_TIME,
-            getSpaceEnvironment());
+        new LimitedRetryRestartStrategy<NativeApplicationRunner>(
+            restartAttempts, restartDelay, RESTART_SUCCESS_TIME, getSpaceEnvironment()
+        );
 
     earthRestartStrategy.addRestartStrategyListener(earthRestartListener);
     addActivityComponent(earthComponent);

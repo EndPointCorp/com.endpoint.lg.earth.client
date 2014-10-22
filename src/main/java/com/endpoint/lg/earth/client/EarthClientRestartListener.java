@@ -30,7 +30,7 @@ import org.apache.commons.logging.Log;
  * 
  * @author Kiel Christofferson <kiel@endpoint.com>
  */
-public class EarthClientRestartListener implements RestartStrategyListener {
+public class EarthClientRestartListener<T extends Restartable> implements RestartStrategyListener {
   /**
    * Configuration template writer from the activity
    */
