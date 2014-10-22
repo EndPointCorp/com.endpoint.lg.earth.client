@@ -201,6 +201,8 @@ public class EarthClientActivity extends BaseActivity {
       extraEarthFlags += getConfiguration().getRequiredPropertyString(CONFIG_SPACENAV_FLAGS);
     }
 
+    extraEarthFlags += " -- ";
+
     // handle window name or viewport target values from activity config
     try {
       // Because non-required integer properties require a default value, the
