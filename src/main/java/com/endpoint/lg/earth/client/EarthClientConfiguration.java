@@ -447,7 +447,7 @@ public class EarthClientConfiguration {
       // easiest way to detect if they exist seems to be to ask for them, and
       // catch the exception when they're missing.
       com.endpoint.lg.support.message.Window w = new com.endpoint.lg.support.message.Window();
-      w.presentation_viewport = activityConfig.getRequiredPropertyString("lg.earth.window.viewport_name");
+      w.presentation_viewport = activityConfig.getRequiredPropertyString("lg.window.viewport.target");
       w.x_coord = activityConfig.getRequiredPropertyInteger("lg.earth.window.x_coord");
       w.y_coord = activityConfig.getRequiredPropertyInteger("lg.earth.window.y_coord");
       window.setName(w.getWindowSlug());
