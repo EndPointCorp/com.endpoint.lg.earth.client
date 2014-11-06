@@ -16,10 +16,11 @@
 
 package com.endpoint.lg.earth.client;
 
+import com.endpoint.lg.support.interactivespaces.ConfigurationHelper;
+import com.endpoint.lg.support.message.Window;
+import com.endpoint.lg.support.window.ManagedWindow;
 import com.endpoint.lg.support.window.WindowIdentity;
 import com.endpoint.lg.support.window.WindowInstanceIdentity;
-import com.endpoint.lg.support.window.ManagedWindow;
-import com.endpoint.lg.support.message.Window;
 
 import interactivespaces.activity.component.binary.BasicNativeActivityComponent;
 import interactivespaces.activity.impl.BaseActivity;
@@ -190,15 +191,15 @@ public class EarthClientActivity extends BaseActivity {
         // than it's worth, for now.
     String extraEarthFlags = " --home-dir=" + installDir.getAbsolutePath() + "/earth/ ";
 
-    extraEarthFlags += getConfiguration().getPropertyString(CONFIG_WRAPPER_FLAGS, "");
+    extraEarthFlags += getConfigArray(CONFIG_WRAPPER_FLAGS);
 
     extraEarthFlags += " -- ";
 
-    extraEarthFlags += getConfiguration().getPropertyString(CONFIG_VIEWSYNC_FLAGS, "");
+    extraEarthFlags += getConfigArray(CONFIG_VIEWSYNC_FLAGS);
 
     // only set SpaceNav flags if configured
     if (!getConfiguration().getRequiredPropertyString(CONFIG_SPACENAV_DEVICE).equals("")) {
-      extraEarthFlags += getConfiguration().getRequiredPropertyString(CONFIG_SPACENAV_FLAGS);
+      extraEarthFlags += getConfigArray(CONFIG_SPACENAV_FLAGS);
     }
 
     extraEarthFlags += " -- ";
@@ -236,7 +237,7 @@ public class EarthClientActivity extends BaseActivity {
         CONFIG_ACTIVITY_EXECUTABLE_FLAGS,
         String.format("%s %s",
             extraEarthFlags,
-            getConfiguration().getRequiredPropertyString(CONFIG_ACTIVITY_EXECUTABLE_FLAGS)));
+            getConfigArray(CONFIG_ACTIVITY_EXECUTABLE_FLAGS)));
 
     // set up the configuration template writer
     EarthClientConfiguration config = new EarthClientConfiguration(getConfiguration(), installDir);
@@ -273,5 +274,9 @@ public class EarthClientActivity extends BaseActivity {
   @Override
   public void onActivityDeactivate() {
     window.setVisible(false);
+  }
+
+  private String getConfigArray(String key) {
+    return ConfigurationHelper.getConfigurationConcat(getConfiguration(), key, " ");
   }
 }
