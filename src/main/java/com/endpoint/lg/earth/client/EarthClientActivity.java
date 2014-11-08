@@ -17,7 +17,6 @@
 package com.endpoint.lg.earth.client;
 
 import com.endpoint.lg.support.interactivespaces.ConfigurationHelper;
-import com.endpoint.lg.support.message.Window;
 import com.endpoint.lg.support.window.ManagedWindow;
 import com.endpoint.lg.support.window.WindowIdentity;
 import com.endpoint.lg.support.window.WindowInstanceIdentity;
@@ -57,30 +56,6 @@ public class EarthClientActivity extends BaseActivity {
    */
   private static final String CONFIG_ACTIVITY_EXECUTABLE_FLAGS =
       "space.activity.component.native.executable.flags.linux";
-
-  /**
-   * Configuration key to specify window viewport
-   */
-  private static final String CONFIG_VIEWPORT_TARGET = "lg.window.viewport.target";
-
-  /**
-   * Configuration key to override window X coordinate
-   */
-  private static final String CONFIG_WINDOW_XCOORD = "lg.earth.window.x_coord";
-
-  /**
-   * Configuration key to override window Y coordinate
-   */
-  private static final String CONFIG_WINDOW_YCOORD = "lg.earth.window.y_coord";
-
-  /**
-   * Configuration key to override window name.
-   *
-   * Note that this will be over-ridden by the coordinate and viewport name
-   * variables. They'll be used to create a Window object, which will then
-   * return a window name with getWindowSlug();
-   */
-  private static final String CONFIG_WINDOW_NAME = "lg.earth.window.name";
 
   /**
    * Configuration key for hidden gui
@@ -178,7 +153,7 @@ public class EarthClientActivity extends BaseActivity {
     addManagedResource(templater);
 
     // set up window management
-    windowId = new WindowInstanceIdentity(getUuid().replace("-", ""));
+    windowId = new WindowInstanceIdentity(getUuid());
     window = new ManagedWindow(this, windowId);
 
     addManagedResource(window);
@@ -205,29 +180,10 @@ public class EarthClientActivity extends BaseActivity {
     extraEarthFlags += " -- ";
 
     // handle window name or viewport target values from activity config
-    try {
-      // Because non-required integer properties require a default value, the
-      // easiest way to detect if they exist seems to be to ask for them, and
-      // catch the exception when they're missing.
-      getLog().debug("Getting window name from xcoord, ycoord, and viewport_name configuration values");
-      Window w = new Window();
-      w.presentation_viewport = getConfiguration().getRequiredPropertyString(CONFIG_VIEWPORT_TARGET);
-      w.x_coord = getConfiguration().getRequiredPropertyInteger(CONFIG_WINDOW_XCOORD);
-      w.y_coord = getConfiguration().getRequiredPropertyInteger(CONFIG_WINDOW_YCOORD);
-      extraEarthFlags += String.format(" -name %s", getUuid().replace("-", ""));
-    } catch (InteractiveSpacesException e) {
-      if (getConfiguration().getPropertyString(CONFIG_WINDOW_NAME) != null
-          && !getConfiguration().getPropertyString(CONFIG_WINDOW_NAME).isEmpty()) {
-        extraEarthFlags +=
-                // This format string used to have "$s" instead of "%s". Should it really be that way?
-            String.format(" -name %s", getConfiguration().getPropertyString(CONFIG_WINDOW_NAME));
-      } else if (getConfiguration().getPropertyString(CONFIG_VIEWPORT_TARGET) != null
-          && !getConfiguration().getPropertyString(CONFIG_VIEWPORT_TARGET).isEmpty()) {
-        extraEarthFlags += String.format(" -name %s", getUuid());
-      }
-    }
+    extraEarthFlags += String.format(" -name %s", getUuid());
 
     // handle lg.earth.gui.hidden boolean from activity config
+    // NB: Yes, --hidegui appears to take two dashes, in contrast to all the other options
     if (Boolean.TRUE.equals(getConfiguration().getRequiredPropertyBoolean(CONFIG_GUI_HIDDEN))) {
       extraEarthFlags += " --hidegui";
     }
