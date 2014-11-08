@@ -3,10 +3,6 @@ CONFIGURATION VARIABLES FOR LG-CMS ACTIVITIES
 earth.client
     space.activity.component.native.executable.flags.linux      Extra earth flags
     lg.window.viewport.target               Viewport name for earth scene messages
-    lg.earth.window.x_coord                 Coordinates for earth scene messages
-    lg.earth.window.y_coord
-    lg.earth.window.name                    window slug value, if viewport_name and ?_coord aren't defined
-    lg.window.viewport.target               window slug value, if lg.earth.window.name isn't set (srsly? Three levels of overriding?)
     lg.earth.gui.hidden                     Should the GUI be hidden (true / false)
     lg.earth.spaceNavigator.device          Does a spacenav exist
     lg.earth.spaceNavigator.flags           Earth flags to handle spacenav device
@@ -53,3 +49,90 @@ earth.client
     lg.earth.render.iconSize=1
     lg.earth.render.textureCompression=true
     lg.earth.render.use3dImagery=true
+
+# Working flags:
+... touchscreen
+lg.earth.gui.flytoSpeed=0.17
+lg.earth.gui.hidden=false
+lg.earth.gui.movementVisualization=false
+lg.earth.gui.showStatusBar=true
+lg.earth.gui.use3dController=true
+lg.earth.kml.defaultView=
+lg.earth.kml.defaultViewLat=12
+lg.earth.kml.defaultViewLon=12
+lg.earth.kml.syncBase=http://lg-head:9001
+lg.earth.launcher.location=
+lg.earth.layers.earth.borders.coastLines=false
+lg.earth.layers.earth.borders.international=false
+lg.earth.layers.earth.borders.statesAndProvinces=false
+lg.earth.layers.earth.borders.waterBodies=false
+lg.earth.layers.earth.buildings.gray=false
+lg.earth.layers.earth.buildings.photoRealistic=true
+lg.earth.layers.earth.buildings.trees=true
+lg.earth.layers.earth.labels.countries=false
+lg.earth.layers.earth.labels.islands=false
+lg.earth.layers.earth.labels.localPlaceNames=false
+lg.earth.layers.earth.labels.populatedPlaces=false
+lg.earth.layers.earth.labels.regionsAndCounties=false
+lg.earth.layers.earth.labels.statesAndProvinces=false
+lg.earth.layers.earth.labels.waterBodies=false
+lg.earth.layers.earth.roads=false
+lg.earth.render.anisotropicFiltering=2
+lg.earth.render.highQualityTerrain=true
+lg.earth.render.iconSize=1
+lg.earth.render.textureCompression=true
+lg.earth.render.use3dImagery=true
+lg.earth.restart.attempts=5
+lg.earth.restart.delay=10
+lg.earth.spaceNavigator.device=true
+lg.earth.spaceNavigator.flags.1=-sSpaceNavigator/device=/dev/input/spacenavigator
+lg.earth.spaceNavigator.flags.2=-sSpaceNavigator/gutterValue=0.1 -sSpaceNavigator/sensitivityPitch=.010
+lg.earth.spaceNavigator.flags.3=-sSpaceNavigator/sensitivityRoll=.0010 -sSpaceNavigator/sensitivityYaw=.00350
+lg.earth.spaceNavigator.flags.4=-sSpaceNavigator/sensitivityX=.250 -sSpaceNavigator/sensitivityY=.250
+lg.earth.spaceNavigator.flags.5=-sSpaceNavigator/sensitivityZ=.020 -sSpaceNavigator/zeroPitch=0.0
+lg.earth.spaceNavigator.flags.6=-sSpaceNavigator/zeroRoll=0.0 -sSpaceNavigator/zeroYaw=0.0
+lg.earth.spaceNavigator.flags.7=-sSpaceNavigator/zeroX=0.0 -sSpaceNavigator/zeroY=0.0 -sSpaceNavigator/zeroZ=0.0
+lg.earth.viewsync.flags=-style GTK+ -sConnection/disableRequestBatching=true -sViewSync/send=true -sViewSync/hostname=10.42.42.255 -sViewSync/port=45678 -sViewSync/yawOffset=0 -sViewSync/pitchOffset=0 -sViewSync/rollOffset=0 -sViewSync/horizFov=29
+lg.earth.wrapper.flags=
+lg.window.viewport.target=touchscreen
+space.activity.component.native.executable.flags.linux=-multiple
+
+... non-touchscreen
+lg.earth.gui.flytoSpeed=0.17
+lg.earth.gui.hidden=false
+lg.earth.gui.movementVisualization=false
+lg.earth.gui.showStatusBar=true
+lg.earth.gui.use3dController=true
+lg.earth.kml.defaultView=
+lg.earth.kml.defaultViewLat=12
+lg.earth.kml.defaultViewLon=12
+lg.earth.kml.syncBase=http://lg-head:9001
+lg.earth.launcher.location=
+lg.earth.layers.earth.borders.coastLines=false
+lg.earth.layers.earth.borders.international=false
+lg.earth.layers.earth.borders.statesAndProvinces=false
+lg.earth.layers.earth.borders.waterBodies=false
+lg.earth.layers.earth.buildings.gray=false
+lg.earth.layers.earth.buildings.photoRealistic=true
+lg.earth.layers.earth.buildings.trees=true
+lg.earth.layers.earth.labels.countries=false
+lg.earth.layers.earth.labels.islands=false
+lg.earth.layers.earth.labels.localPlaceNames=false
+lg.earth.layers.earth.labels.populatedPlaces=false
+lg.earth.layers.earth.labels.regionsAndCounties=false
+lg.earth.layers.earth.labels.statesAndProvinces=false
+lg.earth.layers.earth.labels.waterBodies=false
+lg.earth.layers.earth.roads=false
+lg.earth.render.anisotropicFiltering=2
+lg.earth.render.highQualityTerrain=true
+lg.earth.render.iconSize=1
+lg.earth.render.textureCompression=true
+lg.earth.render.use3dImagery=true
+lg.earth.restart.attempts=5
+lg.earth.restart.delay=10
+lg.earth.spaceNavigator.device=true
+lg.earth.spaceNavigator.flags=
+lg.earth.viewsync.flags=-style GTK+ -sConnection/disableRequestBatching=true -sViewSync/receive=true -sViewSync/hostname=10.42.42.255 -sViewSync/port=45678 -sViewSync/yawOffset=-36 -sViewSync/pitchOffset=0 -sViewSync/rollOffset=0 -sViewSync/horizFov=29 -multiple
+lg.earth.wrapper.flags=
+lg.window.viewport.target=42-b
+space.activity.component.native.executable.flags.linux=
