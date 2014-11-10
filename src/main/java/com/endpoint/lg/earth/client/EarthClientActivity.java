@@ -21,16 +21,22 @@ import com.endpoint.lg.support.window.ManagedWindow;
 import com.endpoint.lg.support.window.WindowIdentity;
 import com.endpoint.lg.support.window.WindowInstanceIdentity;
 
-import interactivespaces.activity.component.binary.BasicNativeActivityComponent;
+import com.google.common.collect.Maps;
+
+//import interactivespaces.activity.component.binary.BasicNativeActivityComponent;
 import interactivespaces.activity.impl.BaseActivity;
 import interactivespaces.InteractiveSpacesException;
 import interactivespaces.service.template.Templater;
 import interactivespaces.service.template.TemplaterService;
 import interactivespaces.util.process.NativeApplicationRunner;
+import interactivespaces.util.process.NativeApplicationRunnerCollection;
 import interactivespaces.util.process.restart.LimitedRetryRestartStrategy;
 import interactivespaces.util.process.restart.RestartStrategy;
 
 import java.io.File;
+import java.util.Map;
+
+
 
 /**
  * An Interactive Spaces activity which starts and stops a Google Earth
@@ -50,6 +56,12 @@ public class EarthClientActivity extends BaseActivity {
    * The folder in the activity which stores the configuration templates.
    */
   private static final String CONFIG_TEMPLATES_DIRECTORY = "configTemplates";
+
+  /**
+   * Configuration key for earth wrapper path
+   */
+  private static final String CONFIG_ACTIVITY_EXECUTABLE_PATH =
+      "space.activity.component.native.executable.linux";
 
   /**
    * Configuration key for native executable flags
@@ -104,9 +116,15 @@ public class EarthClientActivity extends BaseActivity {
   private Templater templater;
 
   /**
-   * Native component for the activity, Google Earth binary
+   * The Right Way to handle native applications
    */
-  private BasicNativeActivityComponent earthComponent;
+  private NativeApplicationRunnerCollection runnerCollection;
+  private NativeApplicationRunner runner;
+
+//  /**
+//   * Native component for the activity, Google Earth binary
+//   */
+//  private BasicNativeActivityComponent earthComponent;
 
   /**
    * Restart Strategy for our activity runner
@@ -134,9 +152,7 @@ public class EarthClientActivity extends BaseActivity {
   private EarthClientConfigWriter configWriter;
 
   /**
-   * Sets up the configuration templates and adds a basic
-   * NativeActivityComponent
-   * 
+   * Sets up the configuration templates and creates the runner for the Earth client
    */
   @Override
   public void onActivitySetup() {
@@ -189,8 +205,18 @@ public class EarthClientActivity extends BaseActivity {
     }
 
     // update activity executable flags configuration with EXTRA flags
-    getConfiguration().setValue(
-        CONFIG_ACTIVITY_EXECUTABLE_FLAGS,
+    Map<String, Object> runnerConfig = Maps.newHashMap();
+//    getConfiguration().setValue(
+
+    runnerConfig.put(
+        NativeApplicationRunner.EXECUTABLE_PATHNAME,
+        getActivityFilesystem().getInstallFile(
+            getConfiguration().getRequiredPropertyString(CONFIG_ACTIVITY_EXECUTABLE_PATH)
+        ).getAbsolutePath()
+    );
+
+    runnerConfig.put(
+        NativeApplicationRunner.EXECUTABLE_FLAGS,
         String.format("%s %s",
             extraEarthFlags,
             getConfigArray(CONFIG_ACTIVITY_EXECUTABLE_FLAGS)));
@@ -201,8 +227,20 @@ public class EarthClientActivity extends BaseActivity {
     configWriter = new EarthClientConfigWriter(config, templater);
 
     // set up the native component
-    earthComponent = new BasicNativeActivityComponent();
+//    earthComponent = new BasicNativeActivityComponent();
     earthRestartListener = new EarthClientRestartListener<NativeApplicationRunner>(configWriter, getLog());
+
+    runnerCollection = new NativeApplicationRunnerCollection(getSpaceEnvironment(), getLog());
+    runner = runnerCollection.newNativeApplicationRunner();
+    getLog().warn("Trying to run this: " + 
+        getActivityFilesystem().getInstallFile(
+            getConfiguration().getRequiredPropertyString(CONFIG_ACTIVITY_EXECUTABLE_PATH)
+        ).getAbsolutePath()
+    );
+    getActivityFilesystem().getInstallFile(
+            getConfiguration().getRequiredPropertyString(CONFIG_ACTIVITY_EXECUTABLE_PATH)
+        ).setExecutable(true);
+    runner.configure(runnerConfig);
 
     int restartAttempts = getConfiguration().getRequiredPropertyInteger(CONFIG_RESTART_ATTEMPTS);
     long restartDelay = getConfiguration().getRequiredPropertyLong(CONFIG_RESTART_DELAY);
@@ -213,13 +251,16 @@ public class EarthClientActivity extends BaseActivity {
         );
 
     earthRestartStrategy.addRestartStrategyListener(earthRestartListener);
-    addActivityComponent(earthComponent);
+    addManagedResource(runnerCollection);
+    runner.setRestartStrategy(earthRestartStrategy);
+    runnerCollection.addNativeApplicationRunner(runner);
+//    addActivityComponent(earthComponent);
   }
 
   @Override
   public void onActivityStartup() {
     configWriter.write();
-    earthComponent.getNativeActivityRunner().setRestartStrategy(earthRestartStrategy);
+//    earthComponent.getNativeActivityRunner().setRestartStrategy(earthRestartStrategy);
   }
 
   @Override
