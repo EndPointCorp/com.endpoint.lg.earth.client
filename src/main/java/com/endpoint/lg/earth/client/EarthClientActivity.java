@@ -193,8 +193,6 @@ public class EarthClientActivity extends BaseActivity {
       extraEarthFlags += getConfigArray(CONFIG_SPACENAV_FLAGS);
     }
 
-    extraEarthFlags += " -- ";
-
     // handle window name or viewport target values from activity config
     extraEarthFlags += String.format(" -name %s", getUuid());
 
@@ -266,6 +264,8 @@ public class EarthClientActivity extends BaseActivity {
   @Override
   public void onActivityActivate() {
     window.setVisible(true);
+        // This is to make sure the earth client sits beneath everything else
+    window.lower();
   }
 
   @Override
