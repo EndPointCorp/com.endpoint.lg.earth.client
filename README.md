@@ -1,4 +1,13 @@
-CONFIGURATION VARIABLES FOR LG-CMS ACTIVITIES
+Google Earth Client
+===================
+
+Java package: com.endpoint.lg.earth.client
+
+This activity stops and starts a Google Earth client instance. It writes the Google Earth configuration files on startup and configuration change.
+
+
+Configuration variables for LG-CMS activities
+---------------------------------------------
 
 earth.client
     space.activity.component.native.executable.flags.linux      Extra earth flags
@@ -10,8 +19,8 @@ earth.client
     lg.earth.wrapper.flags                  Flags for Earth client wrapper
     lg.earth.restart.attempts               How many times to restart the earth client if it crashes          
     lg.earth.restart.delay                  How long to wait before restarting earth, if it crashes
-        # Settings for various Earth behaviors. Values given are either
-        # guessed, or pulled as best as I could from non-IS configurations
+    # Settings for various Earth behaviors. Values given are either
+    # guessed, or pulled as best as I could from non-IS configurations
     lg.earth.cache.diskSize=1024
     lg.earth.cache.location=##HOMEDIR##/.googleearth/Cache
     lg.earth.cache.memorySize=768
@@ -21,13 +30,13 @@ earth.client
     lg.earth.gui.movementVisualization=false
     lg.earth.gui.showStatusBar=true
     lg.earth.gui.use3dController=false
-        # XXX No idea what value to put here
+    # XXX No idea what value to put here
     lg.earth.kml.defaultView=
     lg.earth.kml.defaultViewLat=12
     lg.earth.kml.defaultViewLon=12
     lg.earth.kml.location=##HOMEDIR##/.googleearth
     lg.earth.kml.syncBase=http://lg-head:9001
-        # XXX No idea what value to put here
+    # XXX No idea what value to put here
     lg.earth.launcher.location=
     lg.earth.layers.earth.borders.coastLines=false
     lg.earth.layers.earth.borders.international=false
@@ -51,7 +60,7 @@ earth.client
     lg.earth.render.use3dImagery=true
 
 # Working flags:
-... touchscreen
+# ... touchscreen
 lg.earth.gui.flytoSpeed=0.17
 lg.earth.gui.hidden=false
 lg.earth.gui.movementVisualization=false
@@ -97,7 +106,7 @@ lg.earth.wrapper.flags=
 lg.window.viewport.target=touchscreen
 space.activity.component.native.executable.flags.linux=-multiple
 
-... non-touchscreen
+# ... non-touchscreen
 lg.earth.gui.flytoSpeed=0.17
 lg.earth.gui.hidden=false
 lg.earth.gui.movementVisualization=false
@@ -136,3 +145,19 @@ lg.earth.viewsync.flags=-style GTK+ -sConnection/disableRequestBatching=true -sV
 lg.earth.wrapper.flags=
 lg.window.viewport.target=42-b
 space.activity.component.native.executable.flags.linux=
+
+
+Copyright (C) 2015 Google Inc.
+Copyright (C) 2015 End Point Corporation
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
