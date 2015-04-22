@@ -9,6 +9,7 @@ This activity stops and starts a Google Earth client instance. It writes the Goo
 Configuration variables for LG-CMS activities
 ---------------------------------------------
 
+```
 earth.client
     space.activity.component.native.executable.flags.linux      Extra earth flags
     lg.window.viewport.target               Viewport name for earth scene messages
@@ -145,6 +146,7 @@ lg.earth.viewsync.flags=-style GTK+ -sConnection/disableRequestBatching=true -sV
 lg.earth.wrapper.flags=
 lg.window.viewport.target=42-b
 space.activity.component.native.executable.flags.linux=
+```
 
 
 Copyright (C) 2015 Google Inc.  
