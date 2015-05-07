@@ -5,6 +5,13 @@ Java package: com.endpoint.lg.earth.client
 
 This activity stops and starts a Google Earth client instance. It writes the Google Earth configuration files on startup and configuration change.
 
+Prerequisites
+-------------
+This activity manages the Native Binary from an installed Google Earth desktop application. It is only tested on GNU/Linux. There are two significant requirements for this activity:
+* The first is to have the desktop application installed http://www.google.com/earth/.
+* The second is a tricky hack - all occurrances of '/etc/passwd' within Earth's shared libraries (most notably "libfreebl3.so"), should be replaced with '/dev/null' (perhaps using your favorite hex editor).
+ * This has the desired effect of causing Earth to respect the ```HOME``` envrionment variable.
+ * During activity startup, ```HOME``` will be set to a directory specific to the deployed Live Activity.
 
 Configuration variables for LG-CMS activities
 ---------------------------------------------
