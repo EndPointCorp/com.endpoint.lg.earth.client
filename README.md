@@ -25,7 +25,7 @@ earth.client
     lg.earth.spaceNavigator.flags           Earth flags to handle spacenav device
     lg.earth.viewsync.flags                 Earth flags for viewsync stuff
     lg.earth.wrapper.flags                  Flags for Earth client wrapper
-    lg.earth.restart.attempts               How many times to restart the earth client if it crashes          
+    lg.earth.restart.attempts               How many times to restart the earth client if it crashes
     lg.earth.restart.delay                  How long to wait before restarting earth, if it crashes
     # Settings for various Earth behaviors. Values given are either
     # guessed, or pulled as best as I could from non-IS configurations
