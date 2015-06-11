@@ -31,6 +31,7 @@ import interactivespaces.service.template.Templater;
 import interactivespaces.service.template.TemplaterService;
 import interactivespaces.util.process.NativeApplicationRunner;
 import interactivespaces.util.process.NativeApplicationRunnerCollection;
+import interactivespaces.util.process.StandardNativeApplicationRunnerCollection;
 import interactivespaces.util.process.restart.LimitedRetryRestartStrategy;
 import interactivespaces.util.process.restart.RestartStrategy;
 
@@ -229,7 +230,7 @@ public class EarthClientActivity extends BaseActivity {
 //    earthComponent = new BasicNativeActivityComponent();
     earthRestartListener = new EarthClientRestartListener<NativeApplicationRunner>(configWriter, getLog());
 
-    runnerCollection = new NativeApplicationRunnerCollection(getSpaceEnvironment(), getLog());
+    runnerCollection = new StandardNativeApplicationRunnerCollection(getSpaceEnvironment(), getLog());
     runner = runnerCollection.newNativeApplicationRunner();
     getLog().warn("Trying to run this: " + 
         getActivityFilesystem().getInstallFile(

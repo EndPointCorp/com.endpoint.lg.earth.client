@@ -8,6 +8,113 @@ This activity is meant to stop and start a Google Earth client instance. It writ
   <identifyingName>com.endpoint.lg.earth.client</identifyingName>
   <version>1.0.0.dev</version>
 
+  <activity type="interactivespaces_native">
+    <name>Google Earth client with ViewSync</name>
+    <class>com.endpoint.lg.earth.client.EarthClientActivity</class>
+    <configuration>
+      <property name="space.activity.log.level"><value>info</value></property>
+      <property name="space.activity.component.native.executable.linux"><value>earth/google-earth-exec</value></property>
+      <property name="space.activity.component.native.executable.flags.linux"><value> ${lg.earth.launcher.flags} -- -multiple -sConnection/disableRequestBatching=true ${lg.earth.viewSync.flags}</value></property>
+      <property name="lg.earth.launcher.location"><value>/opt/google/earth</value></property>
+      <property name="lg.earth.launcher.version"><value>free</value></property>
+      <property name="lg.earth.launcher.browser"><value>external-browser</value></property>
+      <property name="lg.earth.launcher.flags"><value> --earth-dir=${lg.earth.launcher.location} --earth-ver=${lg.earth.launcher.version} --browser=${activity.installdir}/earth/${lg.earth.launcher.browser} --home-dir=${activity.installdir}/earth</value></property>
+      <!-- # Number of times to attempt restarting Earth when it crashes. -->
+      <!-- <property name="lg.earth.restart.attempts"><value>10</value></property> -->
+      <!-- # Delay between restart attempts, in milliseconds. -->
+      <!-- <property name="lg.earth.restart.delay"><value>1000</value></property> -->
+      <!-- <property name="lg.earth.gui.hidden"><value>false</value></property> -->
+      <!-- <property name="lg.earth.gui.compassNavigation"><value>2</value></property> -->
+      <!-- <property name="lg.earth.gui.movementVisualization"><value>true</value></property> -->
+      <!-- <property name="lg.earth.gui.showStatusBar"><value>true</value></property> -->
+      <!-- <property name="lg.earth.gui.flytoSpeed"><value>0.18</value></property> -->
+      <!-- <property name="lg.earth.gui.use3dController"><value>true</value></property> -->
+      <!-- <property name="lg.earth.render.anisotropicFiltering"><value>2</value></property> -->
+      <!-- <property name="lg.earth.render.highQualityTerrain"><value>false</value></property> -->
+      <!-- <property name="lg.earth.render.iconSize"><value>1</value></property> -->
+      <!-- <property name="lg.earth.render.use3dImagery"><value>true</value></property> -->
+      <!-- <property name="lg.earth.render.textureCompression"><value>true</value></property> -->
+      <!-- <property name="lg.earth.cache.memorySize"><value>32</value></property> -->
+      <!-- <property name="lg.earth.cache.diskSize"><value>512</value></property> -->
+      <!-- <property name="lg.earth.viewSync.send"><value>false</value></property> -->
+      <!-- <property name="lg.earth.viewSync.receive"><value>false</value></property> -->
+      <!-- <property name="lg.earth.viewSync.hostname"><value>10.42.42.255</value></property> -->
+      <!-- <property name="lg.earth.viewSync.port"><value>42000</value></property> -->
+      <!-- <property name="lg.earth.viewSync.horizFov"><value>65</value></property> -->
+      <!-- <property name="lg.earth.viewSync.yawOffset"><value>0</value></property> -->
+      <!-- <property name="lg.earth.viewSync.pitchOffset"><value>0</value></property> -->
+      <!-- <property name="lg.earth.viewSync.rollOffset"><value>0</value></property> -->
+      <!-- <property name="lg.earth.viewSync.queryFile"><value>/var/tmp/ge_queryfile</value></property> -->
+      <!-- <property name="lg.earth.viewSync.flags"><value> -sViewSync/send=${lg.earth.viewSync.send} -sViewSync/receive=${lg.earth.viewSync.receive} -sViewSync/hostname=${lg.earth.viewSync.hostname} -sViewSync/port=${lg.earth.viewSync.port} -sViewSync/horizFov=${lg.earth.viewSync.horizFov} -sViewSync/yawOffset=${lg.earth.viewSync.yawOffset} -sViewSync/pitchOffset=${lg.earth.viewSync.pitchOffset} -sViewSync/rollOffset=${lg.earth.viewSync.rollOffset} -sViewSync/queryFile=${lg.earth.viewSync.queryFile}</value></property> -->
+      <!-- <property name="lg.earth.spaceNavigator.device"><value></value></property> -->
+      <!-- <property name="lg.earth.spaceNavigator.gutterValue"><value>0.1</value></property> -->
+      <!-- <property name="lg.earth.spaceNavigator.sensitivity"><value>1.0</value></property> -->
+      <!-- <property name="lg.earth.spaceNavigator.sensitivityYaw"><value>0.0035</value></property> -->
+      <!-- <property name="lg.earth.spaceNavigator.sensitivityPitch"><value>0.01</value></property> -->
+      <!-- <property name="lg.earth.spaceNavigator.sensitivityRoll"><value>0.01</value></property> -->
+      <!-- <property name="lg.earth.spaceNavigator.sensitivityX"><value>0.25</value></property> -->
+      <!-- <property name="lg.earth.spaceNavigator.sensitivityY"><value>0.25</value></property> -->
+      <!-- <property name="lg.earth.spaceNavigator.sensitivityZ"><value>0.025</value></property> -->
+      <!-- <property name="lg.earth.spaceNavigator.flags"><value> -sSpaceNavigator/device=${lg.earth.spaceNavigator.device} -sSpaceNavigator/gutterValue=${lg.earth.spaceNavigator.gutterValue} -sSpaceNavigator/sensitivityYaw=${lg.earth.spaceNavigator.sensitivityYaw} -sSpaceNavigator/sensitivityPitch=${lg.earth.spaceNavigator.sensitivityPitch} -sSpaceNavigator/sensitivityRoll=${lg.earth.spaceNavigator.sensitivityRoll} -sSpaceNavigator/sensitivityX=${lg.earth.spaceNavigator.sensitivityX} -sSpaceNavigator/sensitivityY=${lg.earth.spaceNavigator.sensitivityY} -sSpaceNavigator/sensitivityZ=${lg.earth.spaceNavigator.sensitivityZ} -sSpaceNavigator/zeroPitch=0.0 -sSpaceNavigator/zeroRoll=0.0 -sSpaceNavigator/zeroYaw=0.0 -sSpaceNavigator/zeroX=0.0 -sSpaceNavigator/zeroY=0.0 -sSpaceNavigator/zeroZ=0.0</value></property> -->
+      <!-- # GE Common Settings Layers: alphabetical order -->
+      <!-- <property name="lg.earth.layers.earth.borders.coastLines"><value>false</value></property> -->
+      <!-- <property name="lg.earth.layers.earth.borders.international"><value>false</value></property> -->
+      <!-- <property name="lg.earth.layers.earth.borders.statesAndProvinces"><value>false</value></property> -->
+      <!-- <property name="lg.earth.layers.earth.borders.waterBodies"><value>false</value></property> -->
+      <!-- <property name="lg.earth.layers.earth.buildings.gray"><value>true</value></property> -->
+      <!-- <property name="lg.earth.layers.earth.buildings.photoRealistic"><value>true</value></property> -->
+      <!-- <property name="lg.earth.layers.earth.buildings.trees"><value>true</value></property> -->
+      <!-- <property name="lg.earth.layers.earth.labels.countries"><value>true</value></property> -->
+      <!-- <property name="lg.earth.layers.earth.labels.islands"><value>false</value></property> -->
+      <!-- <property name="lg.earth.layers.earth.labels.localPlaceNames"><value>false</value></property> -->
+      <!-- <property name="lg.earth.layers.earth.labels.populatedPlaces"><value>false</value></property> -->
+      <!-- <property name="lg.earth.layers.earth.labels.regionsAndCounties"><value>false</value></property> -->
+      <!-- <property name="lg.earth.layers.earth.labels.statesAndProvinces"><value>false</value></property> -->
+      <!-- <property name="lg.earth.layers.earth.labels.waterBodies"><value>true</value></property> -->
+      <!-- <property name="lg.earth.layers.earth.roads"><value>false</value></property> -->
+      <!-- <property name="lg.earth.kml.syncBase"><value>http://localhost:81/sync</value></property> -->
+      <!-- <property name="lg.earth.kml.defaultView"><value><LookAt><longitude>-122.4661297737901</longitude><latitude>37.71903477888115</latitude><altitude>0</altitude><heading>42.60360249388481</heading><tilt>66.02791701475958</tilt><range>36611.51655091633</range><gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode></LookAt></value></property> -->
+      <!-- <property name="lg.earth.kml.defaultViewLat"><value>0.0</value></property> -->
+      <!-- <property name="lg.earth.kml.defaultViewLon"><value>0.0</value></property> -->
+      <property name="lg.earth.window.toolbar.height"><value>22</value></property>
+      <property name="lg.window.rel.height"><value>${lg.earth.window.toolbar.height}</value></property>
+      <property name="lg.window.rel.y"><value>-${lg.earth.window.toolbar.height}</value></property>
+      <property name="lg.earth.cache.memorySize"><value>32</value></property>
+      <property name="lg.earth.cache.diskSize"><value>512</value></property>
+      <property name="lg.earth.gui.compassNavigation"><value>2</value></property>
+      <property name="lg.earth.gui.flytoSpeed"><value>0.17</value></property>
+      <property name="lg.earth.gui.movementVisualization"><value>false</value></property>
+      <property name="lg.earth.gui.showStatusBar"><value>true</value></property>
+      <property name="lg.earth.gui.use3dController"><value>true</value></property>
+      <property name="lg.earth.kml.defaultView"><value></value></property>
+      <property name="lg.earth.kml.defaultViewLat"><value>0.0</value></property>
+      <property name="lg.earth.kml.defaultViewLon"><value>0.0</value></property>
+      <property name="lg.earth.launcher.location"><value></value></property>
+      <property name="lg.earth.layers.earth.borders.coastLines"><value>false</value></property>
+      <property name="lg.earth.layers.earth.borders.international"><value>false</value></property>
+      <property name="lg.earth.layers.earth.borders.statesAndProvinces"><value>false</value></property>
+      <property name="lg.earth.layers.earth.borders.waterBodies"><value>false</value></property>
+      <property name="lg.earth.layers.earth.buildings.gray"><value>false</value></property>
+      <property name="lg.earth.layers.earth.buildings.photoRealistic"><value>true</value></property>
+      <property name="lg.earth.layers.earth.buildings.trees"><value>true</value></property>
+      <property name="lg.earth.layers.earth.labels.countries"><value>false</value></property>
+      <property name="lg.earth.layers.earth.labels.islands"><value>false</value></property>
+      <property name="lg.earth.layers.earth.labels.localPlaceNames"><value>false</value></property>
+      <property name="lg.earth.layers.earth.labels.populatedPlaces"><value>false</value></property>
+      <property name="lg.earth.layers.earth.labels.regionsAndCounties"><value>false</value></property>
+      <property name="lg.earth.layers.earth.labels.statesAndProvinces"><value>false</value></property>
+      <property name="lg.earth.layers.earth.labels.waterBodies"><value>false</value></property>
+      <property name="lg.earth.layers.earth.roads"><value>false</value></property>
+      <property name="lg.earth.render.anisotropicFiltering"><value>2</value></property>
+      <property name="lg.earth.render.highQualityTerrain"><value>true</value></property>
+      <property name="lg.earth.render.iconSize"><value>1</value></property>
+      <property name="lg.earth.render.textureCompression"><value>true</value></property>
+      <property name="lg.earth.render.use3dImagery"><value>true</value></property>
+      <property name="lg.earth.restart.attempts"><value>5</value></property>
+      <property name="lg.earth.restart.delay"><value>10</value></property>
+    </configuration>
+  </activity>
+
   <deployments>
     <deployment type="testdeploy" location="${deployment.test.deploy}" />
     <deployment type="testimport" location="${deployment.test.import}" />

@@ -19,6 +19,7 @@ package com.endpoint.lg.earth.client;
 
 import interactivespaces.service.template.Templater;
 import interactivespaces.util.data.json.JsonBuilder;
+import interactivespaces.util.data.json.StandardJsonBuilder;
 import interactivespaces.util.io.FileSupport;
 import interactivespaces.util.io.FileSupportImpl;
 
@@ -96,7 +97,7 @@ public class EarthClientConfigWriter {
     fileSupport.directoryExists(config.getConfigDirectory());
     fileSupport.directoryExists(config.getDotDirectory());
 
-    JsonBuilder builder = new JsonBuilder();
+    JsonBuilder builder = new StandardJsonBuilder();
     builder.put(CONFIG_NAMESPACE, config);
 
     Map<String, Object> builtConfig = builder.build();
