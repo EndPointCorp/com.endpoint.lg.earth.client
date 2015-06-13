@@ -12,6 +12,9 @@ This activity is meant to stop and start a Google Earth client instance. It writ
     <name>Google Earth client with ViewSync</name>
     <class>com.endpoint.lg.earth.client.EarthClientActivity</class>
     <configuration>
+      <property name="space.activity.group">
+        <value>generic</value>
+      </property>
       <property name="space.activity.log.level"><value>info</value></property>
       <property name="space.activity.component.native.executable.linux"><value>earth/google-earth-exec</value></property>
       <property name="space.activity.component.native.executable.flags.linux"><value> ${lg.earth.launcher.flags} -- -multiple -sConnection/disableRequestBatching=true ${lg.earth.viewSync.flags}</value></property>
